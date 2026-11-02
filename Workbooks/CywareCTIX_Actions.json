@@ -1,0 +1,3003 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Cyware Intel Exchange"
+      },
+      "name": "text - header"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "0060b1b9-7b0a-5a8e-89af-311d19735209",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 2592000000
+            }
+          },
+          {
+            "id": "ec6058fa-3f77-5fd7-a7b1-59c81d87161d",
+            "version": "KqlParameterItem/1.0",
+            "name": "IOCType",
+            "label": "IOC Type",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "\"",
+            "delimiter": ",",
+            "query": "CywareCTIXIndicators\n| distinct IocType\n| sort by IocType asc",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 2592000000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "5d9c683f-f230-5664-9996-99a27ef7ef17",
+            "version": "KqlParameterItem/1.0",
+            "name": "Source",
+            "label": "Source",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "\"",
+            "delimiter": ",",
+            "query": "CywareCTIXIndicators\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| distinct Source\n| sort by Source asc",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 2592000000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "5e0f3a52-7c1d-4b8e-9f2a-6d4c3b2a1e90",
+            "version": "KqlParameterItem/1.0",
+            "name": "RiskScore",
+            "label": "Risk Score",
+            "type": 2,
+            "description": "Filter by the CTIX confidence (risk) score: Low 0-29, Medium 30-69, High 70-100.",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "\"",
+            "delimiter": ",",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "jsonData": "[{\"value\": \"Low\", \"label\": \"Low (0-29)\"}, {\"value\": \"Medium\", \"label\": \"Medium (30-69)\"}, {\"value\": \"High\", \"label\": \"High (70-100)\"}]",
+            "defaultValue": "value::all"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - filters"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "8c1f2d3e-4a5b-4c6d-9e7f-0a1b2c3d4e5f",
+            "version": "KqlParameterItem/1.0",
+            "name": "PageOpenedAt",
+            "label": "Page Opened At",
+            "type": 1,
+            "description": "Time the workbook was opened or fully refreshed. The playbook result tables only show runs after this time.",
+            "query": "print OpenedAt = tostring(now())",
+            "isHiddenWhenLocked": true,
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - page opened"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## How to use Indicator Actions\n- Run Cyware CTIX playbooks from Microsoft Sentinel: select an indicator in the grid, then use the actions below it. The sections further down work on new indicators, threat bulletins, indicators from other threat intelligence sources and alerts.\n- The **Time Range**, **IOC Type**, **Source** and **Risk Score** filters at the top apply to the grid.\n- Requires the Cyware CTIX playbooks to be deployed.",
+              "style": "upsell"
+            },
+            "name": "text - indicator actions - about"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "bd4c21b1-b200-5ff8-81ac-8d6e41ea68c4",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "PlaybookManageTags",
+                  "label": "Tags Playbook",
+                  "type": 5,
+                  "isRequired": true,
+                  "description": "The CywareCTIX-ManageIndicatorTags playbook (Logic App) to run.",
+                  "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-ManageIndicatorTags\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "crossComponentResources": [
+                    "value::all"
+                  ]
+                },
+                {
+                  "id": "eea17fc7-d01c-5445-a9a5-d33cfd48b055",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "PlaybookAddNote",
+                  "label": "Note Playbook",
+                  "type": 5,
+                  "isRequired": true,
+                  "description": "The CywareCTIX-AddIndicatorNote playbook (Logic App) to run.",
+                  "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-AddIndicatorNote\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "crossComponentResources": [
+                    "value::all"
+                  ]
+                },
+                {
+                  "id": "34dd2f6c-a3c9-5904-b296-336f51ad306d",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "PlaybookScoreStatus",
+                  "label": "Score and Status Playbook",
+                  "type": 5,
+                  "isRequired": true,
+                  "description": "The CywareCTIX-UpdateIndicatorScoreOrStatus playbook (Logic App) to run.",
+                  "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-UpdateIndicatorScoreOrStatus\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "crossComponentResources": [
+                    "value::all"
+                  ]
+                },
+                {
+                  "id": "330d0f89-8805-5c75-bc36-feae3a147930",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "PlaybookBulletinTags",
+                  "label": "Bulletin Tags Playbook",
+                  "type": 5,
+                  "isRequired": true,
+                  "description": "The CywareCTIX-ManageTags-IndicatorOrBulletin playbook (Logic App) to run.",
+                  "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-ManageTags-IndicatorOrBulletin\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "crossComponentResources": [
+                    "value::all"
+                  ]
+                },
+                {
+                  "id": "d1d46f53-b805-599c-b404-f31bbbf5ceb2",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "PlaybookAddWatchlist",
+                  "label": "Watchlist Playbook",
+                  "type": 5,
+                  "isRequired": true,
+                  "description": "The CywareCTIX-AddIndicatorToWatchlist playbook (Logic App) to run.",
+                  "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-AddIndicatorToWatchlist\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "crossComponentResources": [
+                    "value::all"
+                  ]
+                },
+                {
+                  "id": "569214d9-0d40-5f63-9c5b-af9bd8f60289",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "PlaybookWatchlistOccurrences",
+                  "label": "Watchlist Occurrences Playbook",
+                  "type": 5,
+                  "isRequired": true,
+                  "description": "The CywareCTIX-GetWatchlistOccurrences playbook (Logic App) to run.",
+                  "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-GetWatchlistOccurrences\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "crossComponentResources": [
+                    "value::all"
+                  ]
+                },
+                {
+                  "id": "cd1b52d0-4b2a-5c0d-8d93-5ab55a09e475",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "PlaybookPushAlert",
+                  "label": "Push Alert Playbook",
+                  "type": 5,
+                  "isRequired": true,
+                  "description": "The CywareCTIX-PushAlertToCTIX playbook (Logic App) to run.",
+                  "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-PushAlertToCTIX\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "crossComponentResources": [
+                    "value::all"
+                  ]
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - playbooks"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "9eb2630c-7321-5399-9859-874dea06fcb9",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "IndicatorSearch",
+                  "label": "Search Indicator",
+                  "type": 1,
+                  "description": "Show only indicators whose value contains this text.",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - indicator search"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where isempty(\"{IndicatorSearch:escapejson}\") or Indicator contains \"{IndicatorSearch:escapejson}\"\n| sort by CtixModified desc\n| take 10000\n| project ['CTIX ID'] = CtixId, Indicator, ['Open in CTIX'] = tostring(Ctix.indicator_url), ['IOC Type'] = IocType, Score = Confidence, TLP = Tlp,\n    Tags = strcat_array(Tags, \", \"), Sources = strcat_array(Sources, \", \"),\n    Allowlisted = IsWhitelisted, Deprecated = IsDeprecated, ['False Positive'] = IsFalsePositive,\n    ['CTIX Modified'] = CtixModified",
+              "size": 0,
+              "title": "Indicators",
+              "noDataMessage": "No data found for the selected filters.",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "table",
+              "timeContext": {
+                "durationMs": 2592000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportedParameters": [
+                {
+                  "fieldName": "CTIX ID",
+                  "parameterName": "SelectedCtixId",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "Indicator",
+                  "parameterName": "SelectedIndicator",
+                  "parameterType": 1
+                }
+              ],
+              "showAnalytics": true,
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Score",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed",
+                      "min": 0,
+                      "max": 100
+                    }
+                  },
+                  {
+                    "columnMatch": "Open in CTIX",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "Url",
+                      "linkLabel": "Open"
+                    }
+                  },
+                  {
+                    "columnMatch": "CTIX Modified",
+                    "formatter": 6
+                  }
+                ],
+                "filter": true,
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "100",
+            "name": "query - indicator actions - indicators"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "Select an indicator in the grid to see the actions for it.",
+              "style": "info"
+            },
+            "name": "text - indicator actions - select",
+            "conditionalVisibilities": [
+              {
+                "parameterName": "SelectedCtixId",
+                "comparison": "isEqualTo",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "### Actions for **{SelectedIndicator}**"
+                  },
+                  "name": "text - selected indicator"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 9,
+                        "content": {
+                          "version": "KqlParameterItem/1.0",
+                          "parameters": [
+                            {
+                              "id": "6852cc69-a65d-57a4-bf7b-727581cda8d1",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "TagAction",
+                              "label": "Action",
+                              "type": 2,
+                              "isRequired": true,
+                              "jsonData": "[{\"value\": \"add\", \"label\": \"Add tags\", \"selected\": true}, {\"value\": \"remove\", \"label\": \"Remove tags\"}]",
+                              "typeSettings": {
+                                "additionalResourceOptions": [],
+                                "showDefault": false
+                              },
+                              "timeContext": {
+                                "durationMs": 86400000
+                              }
+                            },
+                            {
+                              "id": "710800fc-5a5b-5160-865f-ef26239182b6",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "TagNames",
+                              "label": "Tags (comma-separated)",
+                              "type": 1,
+                              "description": "Comma-separated CTIX tag names or tag IDs. When adding, tags that don't exist are created.",
+                              "timeContext": {
+                                "durationMs": 86400000
+                              }
+                            }
+                          ],
+                          "style": "pills",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces"
+                        },
+                        "name": "parameters - tags"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "da83cffc-b6e2-5428-a141-97ad6897898c",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Update Tags",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookManageTags}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"action\": \"{TagAction}\",\n  \"tags\": \"{TagNames:escapejson}\",\n  \"indicatorIds\": [\n    \"{SelectedCtixId}\"\n  ]\n}",
+                                "httpMethod": "POST",
+                                "title": "Update Tags",
+                                "description": "# Update Tags\nThis runs the **Cyware CTIX - Add or Remove Indicator Tags** playbook and changes the tags of **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Tags** to confirm.",
+                                "runLabel": "Update Tags"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "TagNames",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookManageTags",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - update tags"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookManageTags}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{SelectedCtixId}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                          "size": 0,
+                          "title": "Tags Result",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 2592000000
+                          },
+                          "showRefreshButton": true,
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "Status",
+                                "formatter": 18,
+                                "formatOptions": {
+                                  "thresholdsOptions": "icons",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Succeeded",
+                                      "representation": "success",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Failed",
+                                      "representation": "failed",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "Default",
+                                      "representation": "Unknown",
+                                      "text": "{0}{1}"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "noDataMessage": "Run the action above to see its result here, then select the refresh button.",
+                          "timeContextFromParameter": "TimeRange"
+                        },
+                        "name": "query - results - Tags Result",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookManageTags",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ]
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "*The **CywareCTIX-ManageIndicatorTags** playbook is not deployed (Tags Playbook dropdown above is empty). Deploy it to use this action.*"
+                        },
+                        "name": "text - hint - PlaybookManageTags missing",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookManageTags",
+                            "comparison": "isEqualTo",
+                            "value": ""
+                          }
+                        ]
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "*Enter tags to show the **Update Tags** button.*"
+                        },
+                        "name": "text - hint - tags",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "TagNames",
+                            "comparison": "isEqualTo",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "title": "Add or Remove Tags"
+                  },
+                  "name": "group - action - tags"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 9,
+                        "content": {
+                          "version": "KqlParameterItem/1.0",
+                          "parameters": [
+                            {
+                              "id": "4c7d42c5-1a73-5c9f-a4d6-d6ca7c04ef2f",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "NoteText",
+                              "label": "Note",
+                              "type": 1,
+                              "description": "Text of the note to add to the indicator in CTIX.",
+                              "timeContext": {
+                                "durationMs": 86400000
+                              },
+                              "typeSettings": {
+                                "multiLineText": true,
+                                "editorLanguage": "text",
+                                "multiLineHeight": 3
+                              }
+                            }
+                          ],
+                          "style": "pills",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces"
+                        },
+                        "name": "parameters - note"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "d6a230ee-314b-52b1-afb3-b80594ddd604",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Add Note",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookAddNote}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"note\": \"{NoteText:escapejson}\",\n  \"indicatorIds\": [\n    \"{SelectedCtixId}\"\n  ]\n}",
+                                "httpMethod": "POST",
+                                "title": "Add Note",
+                                "description": "# Add Note\nThis runs the **Cyware CTIX - Add Note to Indicator** playbook and changes **{SelectedIndicator}** by adding a note in Cyware Intel Exchange.\n\nReview the request below, then select **Add Note** to confirm.",
+                                "runLabel": "Add Note"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "NoteText",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookAddNote",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - add note"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddNote}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{SelectedCtixId}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                          "size": 0,
+                          "title": "Add Note Result",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 2592000000
+                          },
+                          "showRefreshButton": true,
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "Status",
+                                "formatter": 18,
+                                "formatOptions": {
+                                  "thresholdsOptions": "icons",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Succeeded",
+                                      "representation": "success",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Failed",
+                                      "representation": "failed",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "Default",
+                                      "representation": "Unknown",
+                                      "text": "{0}{1}"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "noDataMessage": "Run the action above to see its result here, then select the refresh button.",
+                          "timeContextFromParameter": "TimeRange"
+                        },
+                        "name": "query - results - Add Note Result",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookAddNote",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ]
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "*The **CywareCTIX-AddIndicatorNote** playbook is not deployed (Note Playbook dropdown above is empty). Deploy it to use this action.*"
+                        },
+                        "name": "text - hint - PlaybookAddNote missing",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookAddNote",
+                            "comparison": "isEqualTo",
+                            "value": ""
+                          }
+                        ]
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "*Enter a note to show the **Add Note** button.*"
+                        },
+                        "name": "text - hint - note",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "NoteText",
+                            "comparison": "isEqualTo",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "title": "Add Note"
+                  },
+                  "name": "group - action - note"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 9,
+                        "content": {
+                          "version": "KqlParameterItem/1.0",
+                          "parameters": [
+                            {
+                              "id": "e0b332b0-a936-54ad-aa5f-137c5a9db07c",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "StatusAction",
+                              "label": "Action",
+                              "type": 2,
+                              "isRequired": true,
+                              "jsonData": "[{\"value\": \"analyst_score\", \"label\": \"Set analyst score\", \"selected\": true}, {\"value\": \"whitelist\", \"label\": \"Add to allowlist\"}, {\"value\": \"un_whitelist\", \"label\": \"Remove from allowlist\"}, {\"value\": \"deprecate\", \"label\": \"Deprecate\"}, {\"value\": \"un_deprecate\", \"label\": \"Un-deprecate\"}]",
+                              "typeSettings": {
+                                "additionalResourceOptions": [],
+                                "showDefault": false
+                              },
+                              "timeContext": {
+                                "durationMs": 86400000
+                              }
+                            }
+                          ],
+                          "style": "pills",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces"
+                        },
+                        "name": "parameters - status"
+                      },
+                      {
+                        "type": 9,
+                        "content": {
+                          "version": "KqlParameterItem/1.0",
+                          "parameters": [
+                            {
+                              "id": "c50c1df4-ce27-5bb7-b384-c2e41a007ee7",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "Score",
+                              "label": "Analyst Score (0-100)",
+                              "type": 1,
+                              "description": "Analyst score from 0 to 100, shown on the Analysis tab of the indicator in CTIX. It does not change the CTIX risk score.",
+                              "timeContext": {
+                                "durationMs": 86400000
+                              },
+                              "validations": [
+                                {
+                                  "regex": "^(100|[1-9]?[0-9])$",
+                                  "message": "Enter a whole number from 0 to 100."
+                                }
+                              ]
+                            }
+                          ],
+                          "style": "pills",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces"
+                        },
+                        "name": "parameters - score",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "StatusAction",
+                            "comparison": "isEqualTo",
+                            "value": "analyst_score"
+                          }
+                        ]
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "80bf7fb5-f3f0-53de-a46e-ef0b748a3ba4",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Set Analyst Score",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookScoreStatus}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"action\": \"analyst_score\",\n  \"score\": {Score},\n  \"indicatorIds\": [\n    \"{SelectedCtixId}\"\n  ]\n}",
+                                "httpMethod": "POST",
+                                "title": "Set Analyst Score",
+                                "description": "# Set Analyst Score\nThis runs the **Cyware CTIX - Update Indicator Confidence Score or Status** playbook and changes the analyst score of **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Set Analyst Score** to confirm.",
+                                "runLabel": "Set Analyst Score"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "StatusAction",
+                            "comparison": "isEqualTo",
+                            "value": "analyst_score"
+                          },
+                          {
+                            "parameterName": "Score",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookScoreStatus",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - set score"
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "*The **CywareCTIX-UpdateIndicatorScoreOrStatus** playbook is not deployed (Score and Status Playbook dropdown above is empty). Deploy it to use this action.*"
+                        },
+                        "name": "text - hint - PlaybookScoreStatus missing",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookScoreStatus",
+                            "comparison": "isEqualTo",
+                            "value": ""
+                          }
+                        ]
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "*Enter a score to show the **Set Analyst Score** button.*"
+                        },
+                        "name": "text - hint - score",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "StatusAction",
+                            "comparison": "isEqualTo",
+                            "value": "analyst_score"
+                          },
+                          {
+                            "parameterName": "Score",
+                            "comparison": "isEqualTo",
+                            "value": ""
+                          }
+                        ]
+                      },
+                      {
+                        "type": 9,
+                        "content": {
+                          "version": "KqlParameterItem/1.0",
+                          "parameters": [
+                            {
+                              "id": "fcccd822-893d-50ed-9e3e-a24d8e9f343c",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "UndeprecateDays",
+                              "label": "Days (1-3650)",
+                              "type": 1,
+                              "description": "Number of days the indicator stays un-deprecated in CTIX.",
+                              "timeContext": {
+                                "durationMs": 86400000
+                              },
+                              "value": "180",
+                              "validations": [
+                                {
+                                  "regex": "^[1-9][0-9]{0,3}$",
+                                  "message": "Enter a whole number of days from 1 to 3650."
+                                }
+                              ]
+                            }
+                          ],
+                          "style": "pills",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces"
+                        },
+                        "name": "parameters - undeprecate days",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "StatusAction",
+                            "comparison": "isEqualTo",
+                            "value": "un_deprecate"
+                          }
+                        ]
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "2a2e5397-b0c2-54f0-be7f-826dc497da47",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Update Status",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookScoreStatus}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"action\": \"{StatusAction}\",\n  \"indicatorIds\": [\n    \"{SelectedCtixId}\"\n  ]\n}",
+                                "httpMethod": "POST",
+                                "title": "Update Status",
+                                "description": "# Update Status\nThis runs the **Cyware CTIX - Update Indicator Confidence Score or Status** playbook and changes the status of **{SelectedIndicator}** ({StatusAction:label}) in Cyware Intel Exchange.\n\nReview the request below, then select **Update Status** to confirm.",
+                                "runLabel": "Update Status"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "StatusAction",
+                            "comparison": "isNotEqualTo",
+                            "value": "analyst_score"
+                          },
+                          {
+                            "parameterName": "StatusAction",
+                            "comparison": "isNotEqualTo",
+                            "value": "un_deprecate"
+                          },
+                          {
+                            "parameterName": "PlaybookScoreStatus",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - update status"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "7f3674de-ac7e-51eb-958e-4efdcd15cc0f",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Un-deprecate",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookScoreStatus}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"action\": \"un_deprecate\",\n  \"undeprecateDays\": {UndeprecateDays},\n  \"indicatorIds\": [\n    \"{SelectedCtixId}\"\n  ]\n}",
+                                "httpMethod": "POST",
+                                "title": "Un-deprecate",
+                                "description": "# Un-deprecate\nThis runs the **Cyware CTIX - Update Indicator Confidence Score or Status** playbook and changes the status of **{SelectedIndicator}** (un-deprecate for {UndeprecateDays} days) in Cyware Intel Exchange.\n\nReview the request below, then select **Un-deprecate** to confirm.",
+                                "runLabel": "Un-deprecate"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "StatusAction",
+                            "comparison": "isEqualTo",
+                            "value": "un_deprecate"
+                          },
+                          {
+                            "parameterName": "UndeprecateDays",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookScoreStatus",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - undeprecate"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookScoreStatus}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{SelectedCtixId}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                          "size": 0,
+                          "title": "Score or Status Result",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 2592000000
+                          },
+                          "showRefreshButton": true,
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "Status",
+                                "formatter": 18,
+                                "formatOptions": {
+                                  "thresholdsOptions": "icons",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Succeeded",
+                                      "representation": "success",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Failed",
+                                      "representation": "failed",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "Default",
+                                      "representation": "Unknown",
+                                      "text": "{0}{1}"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "noDataMessage": "Run the action above to see its result here, then select the refresh button.",
+                          "timeContextFromParameter": "TimeRange"
+                        },
+                        "name": "query - results - Score or Status Result",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookScoreStatus",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ]
+                      }
+                    ],
+                    "title": "Update Analyst Score or Status"
+                  },
+                  "name": "group - action - score or status"
+                }
+              ]
+            },
+            "name": "group - selected indicator actions",
+            "conditionalVisibilities": [
+              {
+                "parameterName": "SelectedCtixId",
+                "comparison": "isNotEqualTo"
+              }
+            ]
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Add New Indicator",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Add a single indicator to Cyware Intel Exchange with custom metadata and classification."
+                  },
+                  "name": "text - add new indicator - about"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "1b1d17d2-34df-5b07-b21c-868bb2b4e305",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "PlaybookAddIndicator",
+                        "label": "Add Indicator Playbook",
+                        "type": 5,
+                        "isRequired": true,
+                        "description": "The CywareCTIX-AddNewIndicator playbook (Logic App) to run.",
+                        "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-AddNewIndicator\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                        "crossComponentResources": [
+                          "value::all"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": null
+                      },
+                      {
+                        "id": "2598b917-d78e-59d2-907d-759c18a24bd5",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "Title",
+                        "label": "Title",
+                        "type": 1,
+                        "isRequired": false,
+                        "description": "",
+                        "value": "Added from Microsoft Sentinel"
+                      },
+                      {
+                        "id": "377b4e4d-b7e8-5a82-8929-33e09a049c2c",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorType",
+                        "label": "Indicator Type",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"ipv4-addr\", \"label\": \"IPv4 Address\", \"selected\": true}, {\"value\": \"ipv6-addr\", \"label\": \"IPv6 Address\", \"selected\": false}, {\"value\": \"domain-name\", \"label\": \"Domain\", \"selected\": false}, {\"value\": \"url\", \"label\": \"URL\", \"selected\": false}, {\"value\": \"email-addr\", \"label\": \"Email Address\", \"selected\": false}, {\"value\": \"autonomous-system\", \"label\": \"Autonomous System (AS)\", \"selected\": false}, {\"value\": \"MD5\", \"label\": \"MD5\", \"selected\": false}, {\"value\": \"SHA-1\", \"label\": \"SHA1\", \"selected\": false}, {\"value\": \"SHA-224\", \"label\": \"SHA224\", \"selected\": false}, {\"value\": \"SHA-256\", \"label\": \"SHA256\", \"selected\": false}, {\"value\": \"SHA-384\", \"label\": \"SHA384\", \"selected\": false}, {\"value\": \"SHA-512\", \"label\": \"SHA512\", \"selected\": false}, {\"value\": \"SHA3-224\", \"label\": \"SHA3-224\", \"selected\": false}, {\"value\": \"SHA3-256\", \"label\": \"SHA3-256\", \"selected\": false}, {\"value\": \"SHA3-384\", \"label\": \"SHA3-384\", \"selected\": false}, {\"value\": \"SHA3-512\", \"label\": \"SHA3-512\", \"selected\": false}, {\"value\": \"SSDEEP\", \"label\": \"SSDEEP\", \"selected\": false}, {\"value\": \"cidr\", \"label\": \"CIDR\", \"selected\": false}, {\"value\": \"mutex\", \"label\": \"Mutex\", \"selected\": false}, {\"value\": \"user-agent\", \"label\": \"User Agent\", \"selected\": false}, {\"value\": \"user-account\", \"label\": \"User Account\", \"selected\": false}, {\"value\": \"windows-registry-key\", \"label\": \"Windows Registry Key\", \"selected\": false}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        }
+                      },
+                      {
+                        "id": "d2059e36-061d-5a8f-836b-c010cba2d92b",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorValue",
+                        "label": "Indicator Value",
+                        "type": 1,
+                        "isRequired": true,
+                        "description": "e.g. 192.0.2.1 for IPv4, example.com for a domain, AS64512 for an autonomous system"
+                      },
+                      {
+                        "id": "e2b0e329-6f6e-504f-a985-fbeed0a7c881",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "Confidence",
+                        "label": "Confidence",
+                        "type": 1,
+                        "isRequired": false,
+                        "description": "0-100",
+                        "value": "100"
+                      },
+                      {
+                        "id": "90aa3930-7246-5f28-9d42-bd3df1807388",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorTLP",
+                        "label": "TLP",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"CLEAR\", \"label\": \"CLEAR\", \"selected\": false}, {\"value\": \"GREEN\", \"label\": \"GREEN\", \"selected\": false}, {\"value\": \"AMBER\", \"label\": \"AMBER\", \"selected\": true}, {\"value\": \"AMBER+STRICT\", \"label\": \"AMBER+STRICT\", \"selected\": false}, {\"value\": \"RED\", \"label\": \"RED\", \"selected\": false}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        }
+                      },
+                      {
+                        "id": "46089c38-e12a-5ed5-aee2-d1479a52aa0c",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "Tags",
+                        "label": "Tags (comma separated)",
+                        "type": 1,
+                        "isRequired": false,
+                        "description": ""
+                      },
+                      {
+                        "id": "97c8cf32-620b-527b-9a13-60225363c94c",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "DeprecatesAfterDays",
+                        "label": "Deprecates after (in days)",
+                        "type": 1,
+                        "isRequired": false,
+                        "description": "",
+                        "value": "180"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "name": "parameters - add new indicator"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "fd434a71-8af4-520c-be80-465c2223445f",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Add Indicator",
+                        "style": "primary",
+                        "armActionContext": {
+                          "path": "{PlaybookAddIndicator}/triggers/manual/run?api-version=2016-06-01",
+                          "headers": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "params": [],
+                          "body": "{\"title\": \"{Title:escapejson}\", \"indicatorType\": \"{IndicatorType}\", \"indicatorValue\": \"{IndicatorValue:escapejson}\", \"confidence\": \"{Confidence:escapejson}\", \"tlp\": \"{IndicatorTLP}\", \"tags\": \"{Tags:escapejson}\", \"deprecatesAfterDays\": \"{DeprecatesAfterDays:escapejson}\"}",
+                          "httpMethod": "POST",
+                          "title": "Add New Indicator",
+                          "description": "# Add New Indicator\nThis runs the **Cyware CTIX - Add New Indicator** playbook and adds **{IndicatorValue}** ({IndicatorType}) to Cyware Intel Exchange with TLP **{IndicatorTLP}**, confidence **{Confidence}** and deprecation after **{DeprecatesAfterDays}** days.\n\nReview the request below, then select **Add Indicator** to confirm.",
+                          "runLabel": "Add Indicator"
+                        },
+                        "linkIsContextBlade": true
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "PlaybookAddIndicator",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorValue",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - add new indicator"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "**Instructions**\n- Select the Indicator Type and enter the Indicator Value.\n- Optionally provide a Title, Confidence (0-100), TLP and comma-separated Tags. The tag `created_from_sentinel` is always added.\n- Set the deprecation period (in days) after which the indicator is deprecated in CTIX.\n- Click **Add Indicator** to add the indicator. Select refresh on the table below to see the result."
+                  },
+                  "name": "text - add new indicator - instructions"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddNewIndicator\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{IndicatorValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
+                    "size": 0,
+                    "title": "Add New Indicator Result",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "representation": "Unknown",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "noDataMessage": "Run the action above to see its result here, then select the refresh button."
+                  },
+                  "name": "query - results - CywareCTIX-AddNewIndicator",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "PlaybookAddIndicator",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorValue",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                }
+              ]
+            },
+            "name": "group - add new indicator"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Add Indicator to Allowlist",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Add a benign indicator (for example a company IP, a trusted domain or a known-good file hash) to the Cyware Intel Exchange allowlist so CTIX stops flagging it and sharing it downstream. Use the indicator selected in the table above, or enter one manually."
+                  },
+                  "name": "text - add to allowlist - about"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "7e347c54-810a-5824-96e8-cab448534f67",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "PlaybookAddToAllowlist",
+                        "label": "Allowlist Playbook",
+                        "type": 5,
+                        "isRequired": true,
+                        "description": "The CywareCTIX-AddIndicatorToAllowlist playbook (Logic App) to run.",
+                        "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-AddIndicatorToAllowlist\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": [
+                          "value::all"
+                        ],
+                        "value": null
+                      },
+                      {
+                        "id": "04742a42-72c7-5807-ad54-b3fcd9a94d7c",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AllowlistSource",
+                        "label": "Indicator Selection",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter manually\"}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        }
+                      },
+                      {
+                        "id": "a73b040c-4e5a-53a9-b48b-896bd2cab5f2",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AllowlistReason",
+                        "label": "Allowlist Reason",
+                        "type": 1,
+                        "value": "Added from Microsoft Sentinel"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "name": "parameters - add to allowlist"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Click a row in the indicators table above to select an indicator or set **Indicator Selection** to **Enter manually** and enter the indicator manually."
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "AllowlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isEqualTo"
+                    }
+                  ],
+                  "name": "text - add to allowlist - select"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "24c92477-dbbf-5d6a-b103-7ca64601b0f0",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AllowlistSelectedValue",
+                        "label": "Indicator Value",
+                        "type": 2,
+                        "isRequired": true,
+                        "query": "CywareCTIXIndicators\n| where CtixId == '{SelectedCtixId}'\n| take 1\n| project value = replace_string(replace_string(Indicator, @'\\\\', @'\\'), @\"\\'\", \"'\")\n| project value, label = value, selected = true",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "description": "Value of the indicator selected in the table above."
+                      },
+                      {
+                        "id": "9e827631-670e-5af9-95a5-522ebf07cd57",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AllowlistSelectedType",
+                        "label": "Indicator Type",
+                        "type": 2,
+                        "isRequired": true,
+                        "query": "let supported = datatable(ParserType: string, value: string, label: string)['IPv4', 'ipv4-addr', 'IPv4 Address', 'IPv6', 'ipv6-addr', 'IPv6 Address', 'Domain', 'domain-name', 'Domain', 'URL', 'url', 'URL', 'Email', 'email-addr', 'Email Address', 'ASN', 'autonomous-system', 'Autonomous System (AS)', 'MD5', 'MD5', 'MD5', 'SHA-1', 'SHA-1', 'SHA1', 'SHA-224', 'SHA-224', 'SHA224', 'SHA-256', 'SHA-256', 'SHA256', 'SHA-384', 'SHA-384', 'SHA384', 'SHA-512', 'SHA-512', 'SHA512', 'SHA3-224', 'SHA3-224', 'SHA3-224', 'SHA3-256', 'SHA3-256', 'SHA3-256', 'SHA3-384', 'SHA3-384', 'SHA3-384', 'SHA3-512', 'SHA3-512', 'SHA3-512', 'SSDEEP', 'SSDEEP', 'SSDEEP', 'mutex', 'mutex', 'Mutex', 'user-account', 'user-account', 'User Account', 'Registry', 'windows-registry-key', 'Windows Registry Key'];\nCywareCTIXIndicators\n| where CtixId == '{SelectedCtixId}'\n| take 1\n| project IocType\n| join kind=leftouter supported on $left.IocType == $right.ParserType\n| project value = iff(isempty(value), strcat('unsupported:', IocType), value),\n    label = iff(isempty(label), strcat(IocType, ' (not supported by the CTIX allowlist)'), label), selected = true",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "description": "Type of the selected indicator, from the CTIX indicators table."
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "AllowlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "parameters - add to allowlist - selected"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "4be0d669-9766-56ea-a493-60bca8e220e5",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Add to Allowlist",
+                        "style": "primary",
+                        "linkIsContextBlade": true,
+                        "armActionContext": {
+                          "path": "{PlaybookAddToAllowlist}/triggers/manual/run?api-version=2016-06-01",
+                          "headers": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "params": [],
+                          "body": "{\"indicatorType\": \"{AllowlistSelectedType}\", \"indicatorValue\": \"{AllowlistSelectedValue:escapejson}\", \"reason\": \"{AllowlistReason:escapejson}\"}",
+                          "httpMethod": "POST",
+                          "title": "Add Indicator to Allowlist",
+                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **{AllowlistSelectedValue:escapejson}** ({AllowlistSelectedType}) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
+                          "runLabel": "Add to Allowlist"
+                        }
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "AllowlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookAddToAllowlist",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - add to allowlist - selected"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "4ace7831-6622-551a-897b-c901a04410ae",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AllowlistValue",
+                        "label": "Indicator Value",
+                        "type": 1,
+                        "isRequired": true,
+                        "description": "e.g. 192.0.2.10 for IPv4, example.com for a domain"
+                      },
+                      {
+                        "id": "f3676071-115a-533c-90d0-162f9c35dc9d",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AllowlistType",
+                        "label": "Indicator Type",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"ipv4-addr\", \"label\": \"IPv4 Address\", \"selected\": true}, {\"value\": \"ipv6-addr\", \"label\": \"IPv6 Address\", \"selected\": false}, {\"value\": \"domain-name\", \"label\": \"Domain\", \"selected\": false}, {\"value\": \"url\", \"label\": \"URL\", \"selected\": false}, {\"value\": \"email-addr\", \"label\": \"Email Address\", \"selected\": false}, {\"value\": \"MD5\", \"label\": \"MD5\", \"selected\": false}, {\"value\": \"SHA-1\", \"label\": \"SHA1\", \"selected\": false}, {\"value\": \"SHA-256\", \"label\": \"SHA256\", \"selected\": false}, {\"value\": \"SHA-512\", \"label\": \"SHA512\", \"selected\": false}, {\"value\": \"SSDEEP\", \"label\": \"SSDEEP\", \"selected\": false}, {\"value\": \"user-account\", \"label\": \"User Account\", \"selected\": false}, {\"value\": \"mutex\", \"label\": \"Mutex\", \"selected\": false}, {\"value\": \"windows-registry-key\", \"label\": \"Windows Registry Key\", \"selected\": false}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "AllowlistSource",
+                    "comparison": "isEqualTo",
+                    "value": "manual"
+                  },
+                  "name": "parameters - add to allowlist - manual"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "d01b2c2f-556d-5821-8179-b09a4b7c1104",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Add to Allowlist",
+                        "style": "primary",
+                        "linkIsContextBlade": true,
+                        "armActionContext": {
+                          "path": "{PlaybookAddToAllowlist}/triggers/manual/run?api-version=2016-06-01",
+                          "headers": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "params": [],
+                          "body": "{\"indicatorType\": \"{AllowlistType}\", \"indicatorValue\": \"{AllowlistValue:escapejson}\", \"reason\": \"{AllowlistReason:escapejson}\"}",
+                          "httpMethod": "POST",
+                          "title": "Add Indicator to Allowlist",
+                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **{AllowlistValue:escapejson}** ({AllowlistType}) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
+                          "runLabel": "Add to Allowlist"
+                        }
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "AllowlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    },
+                    {
+                      "parameterName": "AllowlistValue",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookAddToAllowlist",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - add to allowlist - manual"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddIndicatorToAllowlist\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistSelectedValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
+                    "size": 0,
+                    "title": "Add to Allowlist Result",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "representation": "Unknown",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "noDataMessage": "Run the action above to see its result here, then select the refresh button."
+                  },
+                  "name": "query - results - CywareCTIX-AddIndicatorToAllowlist - selected",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "AllowlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookAddToAllowlist",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddIndicatorToAllowlist\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
+                    "size": 0,
+                    "title": "Add to Allowlist Result",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "representation": "Unknown",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "noDataMessage": "Run the action above to see its result here, then select the refresh button."
+                  },
+                  "name": "query - results - CywareCTIX-AddIndicatorToAllowlist - manual",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "AllowlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    },
+                    {
+                      "parameterName": "AllowlistValue",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookAddToAllowlist",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                }
+              ]
+            },
+            "name": "group - add to allowlist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Update Indicator Status",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Update an indicator in Cyware Intel Exchange so its status follows the investigation outcome in Microsoft Sentinel. Use the indicator selected in the table above, or enter its CTIX ID."
+                  },
+                  "name": "text - update indicator status - about"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "2b486b54-27c9-51f5-92b3-3107ad5e6a8b",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "PlaybookUpdateIndicatorStatus",
+                        "label": "Update Status Playbook",
+                        "type": 5,
+                        "isRequired": true,
+                        "description": "The CywareCTIX-UpdateIndicatorStatus playbook (Logic App) to run.",
+                        "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-UpdateIndicatorStatus\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": [
+                          "value::all"
+                        ],
+                        "value": null
+                      },
+                      {
+                        "id": "eee1e65a-b805-587e-9e12-8024af31b7ea",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorStatusSource",
+                        "label": "Indicator Selection",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter CTIX ID\"}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        }
+                      },
+                      {
+                        "id": "994251d8-72f4-55a8-99ed-25a0b0b8aa3b",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorStatusAction",
+                        "label": "Action",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"deprecate\", \"label\": \"Deprecate\", \"selected\": true}, {\"value\": \"un_deprecate\", \"label\": \"Undeprecate\", \"selected\": false}, {\"value\": \"false_positive\", \"label\": \"Mark False Positive\", \"selected\": false}, {\"value\": \"un_false_positive\", \"label\": \"Unmark False Positive\", \"selected\": false}, {\"value\": \"manual_review\", \"label\": \"Mark for Manual Review\", \"selected\": false}, {\"value\": \"reviewed\", \"label\": \"Mark as Reviewed\", \"selected\": false}, {\"value\": \"whitelist\", \"label\": \"Add to Allowlist\", \"selected\": false}, {\"value\": \"un_whitelist\", \"label\": \"Remove from Allowlist\", \"selected\": false}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        }
+                      },
+                      {
+                        "id": "ac88b084-cf3c-58ff-a2fd-6f62dacbb23a",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorActionCategory",
+                        "label": "Action category",
+                        "type": 1,
+                        "isHiddenWhenLocked": true,
+                        "isRequired": true,
+                        "query": "print value = case(\"{IndicatorStatusAction}\" == 'deprecate', 'simple', \"{IndicatorStatusAction}\" == 'false_positive', 'simple', \"{IndicatorStatusAction}\" == 'un_false_positive', 'simple', \"{IndicatorStatusAction}\" == 'manual_review', 'simple', \"{IndicatorStatusAction}\" == 'reviewed', 'simple', \"{IndicatorStatusAction}\" == 'whitelist', 'simple', \"{IndicatorStatusAction}\" == 'un_whitelist', 'simple', \"{IndicatorStatusAction}\" == 'un_deprecate', 'undeprecate', 'simple')",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - update indicator status"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "91f93647-0e92-575a-9d5d-0cfc031f00fa",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorCtixId",
+                        "label": "CTIX ID",
+                        "type": 1,
+                        "isRequired": true,
+                        "description": "CTIX object ID of the indicator (as in the Splunk Update Indicator Status form)."
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - update indicator status - ctix id",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    }
+                  ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Click a row in the indicators table above to select an indicator or set **Indicator Selection** to **Enter CTIX ID** and enter the ID manually."
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isEqualTo"
+                    }
+                  ],
+                  "name": "text - update indicator status - select"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Indicator: **{SelectedIndicator}**"
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "text - update indicator status - selected indicator"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "f44078db-5d42-59d9-8f1f-d9f8e65340b3",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "IndicatorUndeprecateDays",
+                        "label": "Undeprecate for (days)",
+                        "type": 1,
+                        "isRequired": true,
+                        "value": "180"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - update indicator status - undeprecate days",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusAction",
+                      "comparison": "isEqualTo",
+                      "value": "un_deprecate"
+                    }
+                  ]
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "74ec4faa-8303-5dc2-bf61-ae2aa100e36b",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Update Indicator",
+                        "style": "primary",
+                        "linkIsContextBlade": true,
+                        "armActionContext": {
+                          "path": "{PlaybookUpdateIndicatorStatus}/triggers/manual/run?api-version=2016-06-01",
+                          "headers": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "params": [],
+                          "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{SelectedCtixId}\", \"objectType\": \"indicator\"}",
+                          "httpMethod": "POST",
+                          "title": "Update Indicator Status",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "runLabel": "Update Indicator"
+                        }
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorActionCategory",
+                      "comparison": "isEqualTo",
+                      "value": "simple"
+                    },
+                    {
+                      "parameterName": "PlaybookUpdateIndicatorStatus",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - update indicator status - selected - simple"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "c12b8c88-a023-50af-8bd1-2fb5a39ad604",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Update Indicator",
+                        "style": "primary",
+                        "linkIsContextBlade": true,
+                        "armActionContext": {
+                          "path": "{PlaybookUpdateIndicatorStatus}/triggers/manual/run?api-version=2016-06-01",
+                          "headers": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "params": [],
+                          "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{SelectedCtixId}\", \"objectType\": \"indicator\", \"undeprecateDays\": \"{IndicatorUndeprecateDays:escapejson}\"}",
+                          "httpMethod": "POST",
+                          "title": "Update Indicator Status",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "runLabel": "Update Indicator"
+                        }
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorActionCategory",
+                      "comparison": "isEqualTo",
+                      "value": "undeprecate"
+                    },
+                    {
+                      "parameterName": "PlaybookUpdateIndicatorStatus",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorUndeprecateDays",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - update indicator status - selected - undeprecate"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "63277e75-c7de-50ac-9d7a-91e0399084f1",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Update Indicator",
+                        "style": "primary",
+                        "linkIsContextBlade": true,
+                        "armActionContext": {
+                          "path": "{PlaybookUpdateIndicatorStatus}/triggers/manual/run?api-version=2016-06-01",
+                          "headers": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "params": [],
+                          "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{IndicatorCtixId:escapejson}\", \"objectType\": \"indicator\"}",
+                          "httpMethod": "POST",
+                          "title": "Update Indicator Status",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **CTIX object {IndicatorCtixId}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "runLabel": "Update Indicator"
+                        }
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    },
+                    {
+                      "parameterName": "IndicatorCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorActionCategory",
+                      "comparison": "isEqualTo",
+                      "value": "simple"
+                    },
+                    {
+                      "parameterName": "PlaybookUpdateIndicatorStatus",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - update indicator status - manual - simple"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "e1ae0951-863c-5afe-974c-266e946925eb",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Update Indicator",
+                        "style": "primary",
+                        "linkIsContextBlade": true,
+                        "armActionContext": {
+                          "path": "{PlaybookUpdateIndicatorStatus}/triggers/manual/run?api-version=2016-06-01",
+                          "headers": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "params": [],
+                          "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{IndicatorCtixId:escapejson}\", \"objectType\": \"indicator\", \"undeprecateDays\": \"{IndicatorUndeprecateDays:escapejson}\"}",
+                          "httpMethod": "POST",
+                          "title": "Update Indicator Status",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **CTIX object {IndicatorCtixId}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "runLabel": "Update Indicator"
+                        }
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    },
+                    {
+                      "parameterName": "IndicatorCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorActionCategory",
+                      "comparison": "isEqualTo",
+                      "value": "undeprecate"
+                    },
+                    {
+                      "parameterName": "PlaybookUpdateIndicatorStatus",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "IndicatorUndeprecateDays",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - update indicator status - manual - undeprecate"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-UpdateIndicatorStatus\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{SelectedCtixId}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "size": 0,
+                    "title": "Update Indicator Status Result",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "representation": "Unknown",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "noDataMessage": "Run the action above to see its result here, then select the refresh button.",
+                    "timeContext": {
+                      "durationMs": 2592000000
+                    },
+                    "timeContextFromParameter": "TimeRange"
+                  },
+                  "name": "query - results - CywareCTIX-UpdateIndicatorStatus - selected",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookUpdateIndicatorStatus",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-UpdateIndicatorStatus\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{IndicatorCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "size": 0,
+                    "title": "Update Indicator Status Result",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "representation": "Unknown",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "noDataMessage": "Run the action above to see its result here, then select the refresh button.",
+                    "timeContext": {
+                      "durationMs": 2592000000
+                    },
+                    "timeContextFromParameter": "TimeRange"
+                  },
+                  "name": "query - results - CywareCTIX-UpdateIndicatorStatus - manual",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "IndicatorStatusSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    },
+                    {
+                      "parameterName": "IndicatorCtixId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookUpdateIndicatorStatus",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                }
+              ]
+            },
+            "name": "group - update indicator status"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Add or remove CTIX tags on a CTIX Threat Bulletin. Threat Bulletins are not ingested into Microsoft Sentinel, so enter the bulletin ID from CTIX."
+                  },
+                  "name": "text - bulletin about"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "143b06d7-dd67-554b-adbc-3c3bad7cec3d",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "BulletinId",
+                        "label": "Threat Bulletin ID",
+                        "type": 1,
+                        "description": "ID of the CTIX Threat Bulletin.",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      },
+                      {
+                        "id": "2f2f73d2-2993-5ea8-9b91-a2149682db06",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "BulletinTagAction",
+                        "label": "Action",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"add\", \"label\": \"Add tags\", \"selected\": true}, {\"value\": \"remove\", \"label\": \"Remove tags\"}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      },
+                      {
+                        "id": "00a5773e-6961-51b5-9767-1cc088f19c4a",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "BulletinTagNames",
+                        "label": "Tags (comma-separated)",
+                        "type": 1,
+                        "description": "Comma-separated CTIX tag names or tag IDs. When adding, tags that don't exist are created.",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - bulletin"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "list",
+                    "links": [
+                      {
+                        "id": "dbe6cd3e-7f80-5774-aa48-2109d76188e5",
+                        "linkTarget": "ArmAction",
+                        "linkLabel": "Update Bulletin Tags",
+                        "style": "primary",
+                        "linkIsContextBlade": true,
+                        "armActionContext": {
+                          "path": "{PlaybookBulletinTags}/triggers/manual/run?api-version=2016-10-01",
+                          "headers": [],
+                          "params": [],
+                          "body": "{\n  \"objectType\": \"bulletin\",\n  \"objectIds\": [\n    \"{BulletinId:escapejson}\"\n  ],\n  \"action\": \"{BulletinTagAction}\",\n  \"tags\": \"{BulletinTagNames:escapejson}\"\n}",
+                          "httpMethod": "POST",
+                          "title": "Update Bulletin Tags",
+                          "description": "# Update Bulletin Tags\nThis runs the **Cyware CTIX - Add or Remove Tags on Indicator or Threat Bulletin** playbook and changes the tags of Threat Bulletin **{BulletinId}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Bulletin Tags** to confirm.",
+                          "runLabel": "Update Bulletin Tags"
+                        }
+                      }
+                    ]
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "BulletinId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "BulletinTagNames",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookBulletinTags",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "links - update bulletin tags"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookBulletinTags}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{BulletinId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project ['Bulletin ID'] = CtixId, Action, Status, Message",
+                    "size": 0,
+                    "title": "Bulletin Tags Result",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "representation": "Unknown",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "noDataMessage": "Run the action above to see its result here, then select the refresh button."
+                  },
+                  "name": "query - results - Bulletin Tags Result",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "BulletinId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "PlaybookBulletinTags",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "*The **CywareCTIX-ManageTags-IndicatorOrBulletin** playbook is not deployed (Bulletin Tags Playbook dropdown above is empty). Deploy it to use this action.*"
+                  },
+                  "name": "text - hint - PlaybookBulletinTags missing",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "PlaybookBulletinTags",
+                      "comparison": "isEqualTo",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "*Enter the bulletin ID and tags to show the **Update Bulletin Tags** button.*"
+                  },
+                  "name": "text - hint - bulletin id",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "BulletinId",
+                      "comparison": "isEqualTo",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "*Enter the bulletin ID and tags to show the **Update Bulletin Tags** button.*"
+                  },
+                  "name": "text - hint - bulletin tags",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "BulletinId",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "BulletinTagNames",
+                      "comparison": "isEqualTo",
+                      "value": ""
+                    }
+                  ]
+                }
+              ],
+              "title": "Threat Bulletin Tags"
+            },
+            "name": "group - bulletin tags"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "## How to use the CTIX Watchlist\nAdd indicators that Microsoft Sentinel received from other threat intelligence sources to the CTIX watchlist, so CTIX records every occurrence of them in intel it receives after the indicator is added.\n1. Select an indicator in the **Indicators from Other Threat Intelligence Sources** grid.\n2. Select **Add to CTIX Watchlist** to add it to the CTIX watchlist (once per indicator).\n3. Select **Get Occurrences** to look up where CTIX has observed it.\n4. The results show in the **Watchlist Occurrences** grid a few minutes after the run (up to 15 minutes the first time). Select the grid's refresh button until they appear.\n\nThe grid shows the latest lookup of the selected indicator from the last 24 hours. If no results appear, check the **CywareCTIX-GetWatchlistOccurrences** playbook's run history.",
+                    "style": "upsell"
+                  },
+                  "name": "text - watchlist about"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "fe13d15d-8a3a-5d9e-8217-64bb8548bd88",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "OtherIndicatorSearch",
+                        "label": "Search Indicator",
+                        "type": 1,
+                        "description": "Show only indicators whose value contains this text.",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - other indicator search"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ThreatIntelIndicators\n| where SourceSystem != \"CywareCTIX\" and isnotempty(ObservableValue)\n| where TimeGenerated {TimeRange}\n| summarize arg_max(TimeGenerated, SourceSystem, ObservableKey, ObservableValue, Confidence, ValidUntil, IsActive) by Id\n| where IsActive\n| where isempty(\"{OtherIndicatorSearch:escapejson}\") or ObservableValue contains \"{OtherIndicatorSearch:escapejson}\"\n| summarize ['IOC Type'] = take_any(tostring(split(ObservableKey, \":\")[0])), Sources = strcat_array(make_set(SourceSystem), \", \"),\n    Confidence = max(Confidence), ['Valid Until'] = max(ValidUntil), ['Last Updated'] = max(TimeGenerated) by Indicator = tostring(ObservableValue)\n| sort by ['Last Updated'] desc\n| take 10000",
+                    "size": 0,
+                    "title": "Indicators from Other Threat Intelligence Sources",
+                    "noDataMessage": "No active indicators from other threat intelligence sources in the selected time range.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 2592000000
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "exportedParameters": [
+                      {
+                        "fieldName": "Indicator",
+                        "parameterName": "SelectedOtherIndicator",
+                        "parameterType": 1
+                      }
+                    ],
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Confidence",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "palette": "greenRed",
+                            "min": 0,
+                            "max": 100
+                          }
+                        },
+                        {
+                          "columnMatch": "Valid Until",
+                          "formatter": 6
+                        },
+                        {
+                          "columnMatch": "Last Updated",
+                          "formatter": 6
+                        }
+                      ],
+                      "filter": true,
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "100",
+                  "name": "query - watchlist - other indicators"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Select an indicator in the grid to add it to the CTIX watchlist or get its occurrences.",
+                    "style": "info"
+                  },
+                  "name": "text - watchlist select",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedOtherIndicator",
+                      "comparison": "isEqualTo",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "### Watchlist actions for **{SelectedOtherIndicator}**"
+                        },
+                        "name": "text - watchlist selected"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "d8a1eb56-2201-55f2-a072-8b37b96972bf",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Add to CTIX Watchlist",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookAddWatchlist}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"values\": [\n    \"{SelectedOtherIndicator:escapejson}\"\n  ]\n}",
+                                "httpMethod": "POST",
+                                "title": "Add to CTIX Watchlist",
+                                "description": "# Add to CTIX Watchlist\nThis runs the **Cyware CTIX - Add Indicator to Watchlist** playbook and changes the watchlist by adding **{SelectedOtherIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Add to CTIX Watchlist** to confirm.",
+                                "runLabel": "Add to CTIX Watchlist"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "SelectedOtherIndicator",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookAddWatchlist",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - add to watchlist"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "52325fda-218a-5822-ac09-55f1e4aa431c",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Get Occurrences",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookWatchlistOccurrences}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"values\": [\n    \"{SelectedOtherIndicator:escapejson}\"\n  ]\n}",
+                                "httpMethod": "POST",
+                                "title": "Get Occurrences",
+                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **{SelectedOtherIndicator}** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
+                                "runLabel": "Get Occurrences"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "SelectedOtherIndicator",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookWatchlistOccurrences",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - get occurrences"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddWatchlist}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{SelectedOtherIndicator:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator, Action, Status, Message",
+                          "size": 0,
+                          "title": "Add to CTIX Watchlist Result",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 86400000
+                          },
+                          "showRefreshButton": true,
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "Status",
+                                "formatter": 18,
+                                "formatOptions": {
+                                  "thresholdsOptions": "icons",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Succeeded",
+                                      "representation": "success",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Failed",
+                                      "representation": "failed",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "Default",
+                                      "representation": "Unknown",
+                                      "text": "{0}{1}"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "noDataMessage": "Run the action above to see its result here, then select the refresh button."
+                        },
+                        "name": "query - results - Add to CTIX Watchlist Result",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookAddWatchlist",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "name": "group - watchlist actions",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedOtherIndicator",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{SelectedOtherIndicator:escapejson}\";\n// Latest run per keyword only.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
+                    "size": 0,
+                    "title": "Watchlist Occurrences for {SelectedOtherIndicator}",
+                    "noDataMessage": "No occurrence results in the last 24 hours. Select Get Occurrences, wait a few minutes, then refresh this grid.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Occurrence Time",
+                          "formatter": 6
+                        },
+                        {
+                          "columnMatch": "Looked Up",
+                          "formatter": 6
+                        }
+                      ],
+                      "filter": true,
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "100",
+                  "name": "query - watchlist - occurrences",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedOtherIndicator",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                }
+              ],
+              "title": "CTIX Watchlist"
+            },
+            "name": "group - watchlist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Send a Microsoft Sentinel alert to Cyware Intel Exchange as a STIX bundle: the alert as an incident, its IP, domain, URL and file hash entities as indicators, its MITRE ATT&CK techniques as attack patterns and its malware entities as malware, with the relationships between them. Internal and other non-public IP addresses are not sent. Pushing the same alert again updates the same objects in CTIX.\n\n**IOCs** counts the alert's shareable IOCs; **New to CTIX** counts those that aren't CTIX indicators yet. Alerts whose IOCs are all CTIX indicators already are not listed.",
+                    "style": "info"
+                  },
+                  "name": "text - push alert about"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "be92d280-f125-50a0-8207-13c42b62f962",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AlertSearch",
+                        "label": "Search Alert",
+                        "type": 1,
+                        "description": "Show only alerts whose name or entities contain this text.",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - alert search"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// Alerts whose IOCs are all CTIX indicators already are left out (nothing new for CTIX).\nlet CtixValues = toscalar(CywareCTIXIndicators | where isnotempty(Indicator) | summarize make_set(tolower(Indicator), 1000000));\nlet NonPublicV4 = dynamic(['0.0.0.0/8', '10.0.0.0/8', '100.64.0.0/10', '127.0.0.0/8', '169.254.0.0/16', '172.16.0.0/12', '192.168.0.0/16', '224.0.0.0/3']);\nlet NonPublicV6 = dynamic(['::1/128', '::/128', 'fc00::/7', 'fe80::/10', 'ff00::/8']);\nSecurityAlert\n| where TimeGenerated {TimeRange}\n| summarize arg_max(TimeGenerated, *) by SystemAlertId\n| where isempty(\"{AlertSearch:escapejson}\") or AlertName contains \"{AlertSearch:escapejson}\" or Entities contains \"{AlertSearch:escapejson}\"\n| mv-apply E = todynamic(Entities) on (\n    extend T = tolower(tostring(E.Type))\n    | extend V = trim(' ', case(T == 'ip', tostring(E.Address), T == 'dns', tostring(E.DomainName), T == 'url', tostring(E.Url),\n        T == 'filehash' and toupper(replace_string(tostring(E.Algorithm), '-', '')) in ('SHA256', 'SHA1', 'MD5'), tostring(E.Value), ''))\n    // Same rule as the playbook: internal and other non-public IP addresses are not sent.\n    | where not(T == 'ip' and V !contains ':' and (isnull(parse_ipv4(V)) or ipv4_is_in_any_range(V, NonPublicV4)))\n    | where not(T == 'ip' and V contains ':' and ipv6_is_in_any_range(V, NonPublicV6))\n    | summarize Iocs = make_set_if(tolower(V), isnotempty(V)), Malware = make_set_if(tostring(E.Name), T == 'malware'))\n| extend NewIocs = set_difference(Iocs, CtixValues)\n| where array_length(Iocs) == 0 or array_length(NewIocs) > 0\n| extend TechniqueIds = array_concat(todynamic(iff(isempty(Techniques), '[]', Techniques)), todynamic(iff(isempty(SubTechniques), '[]', SubTechniques)))\n| sort by TimeGenerated desc\n| take 10000\n| project ['Alert ID'] = SystemAlertId, Alert = AlertName, Severity = AlertSeverity, Product = ProductName, ['Alert Time'] = TimeGenerated,\n    Tactics, Techniques = strcat_array(TechniqueIds, \", \"), IOCs = array_length(Iocs), ['New to CTIX'] = array_length(NewIocs),\n    ['IOC Values'] = strcat_array(array_slice(Iocs, 0, 9), \", \"), Malware = strcat_array(Malware, \", \")",
+                    "size": 0,
+                    "title": "Microsoft Sentinel Alerts",
+                    "noDataMessage": "No alerts in the selected time range (alerts whose IOCs are all CTIX indicators already are not listed).",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 2592000000
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "exportedParameters": [
+                      {
+                        "fieldName": "Alert ID",
+                        "parameterName": "SelectedAlertId",
+                        "parameterType": 1
+                      },
+                      {
+                        "fieldName": "Alert",
+                        "parameterName": "SelectedAlertName",
+                        "parameterType": 1
+                      }
+                    ],
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Alert ID",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "Alert Time",
+                          "formatter": 6
+                        }
+                      ],
+                      "filter": true,
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "100",
+                  "name": "query - push alert - alerts"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Select an alert in the grid to push it to CTIX.",
+                    "style": "info"
+                  },
+                  "name": "text - push alert select",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedAlertId",
+                      "comparison": "isEqualTo",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "### Push **{SelectedAlertName}** to CTIX"
+                        },
+                        "name": "text - push alert selected"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "5ddb574e-7cd1-564c-82ec-58fecdcbe73c",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Push to CTIX",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookPushAlert}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"alertId\": \"{SelectedAlertId:escapejson}\"\n}",
+                                "httpMethod": "POST",
+                                "title": "Push to CTIX",
+                                "description": "# Push to CTIX\nThis runs the **Cyware CTIX - Push Microsoft Sentinel Alert to CTIX** playbook. It sends the alert **{SelectedAlertName}** to Cyware Intel Exchange with its IOCs, MITRE ATT&CK techniques and malware.\n\nReview the request below, then select **Push to CTIX** to confirm.",
+                                "runLabel": "Push to CTIX"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "SelectedAlertId",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookPushAlert",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - push alert"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookPushAlert}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Details == \"{SelectedAlertId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Alert = iff(isnotempty(Indicator), Indicator, Details), Action, Status, Message",
+                          "size": 0,
+                          "title": "Push to CTIX Result",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 86400000
+                          },
+                          "showRefreshButton": true,
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "Status",
+                                "formatter": 18,
+                                "formatOptions": {
+                                  "thresholdsOptions": "icons",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Succeeded",
+                                      "representation": "success",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Failed",
+                                      "representation": "failed",
+                                      "text": "{0}{1}"
+                                    },
+                                    {
+                                      "operator": "Default",
+                                      "representation": "Unknown",
+                                      "text": "{0}{1}"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "noDataMessage": "Run the action above to see its result here, then select the refresh button."
+                        },
+                        "name": "query - results - Push to CTIX Result",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookPushAlert",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ]
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "*The **CywareCTIX-PushAlertToCTIX** playbook is not deployed (Push Alert Playbook dropdown above is empty). Deploy it to use this action.*"
+                        },
+                        "name": "text - hint - PlaybookPushAlert missing",
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "PlaybookPushAlert",
+                            "comparison": "isEqualTo",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "name": "group - push alert actions",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedAlertId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                }
+              ],
+              "title": "Push Alerts to CTIX"
+            },
+            "name": "group - push alert"
+          }
+        ]
+      },
+      "name": "group - indicator actions"
+    }
+  ],
+  "fallbackResourceIds": [],
+  "fromTemplateId": "sentinel-CywareCTIX",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
