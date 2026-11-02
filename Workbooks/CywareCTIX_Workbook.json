@@ -1,0 +1,2834 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Cyware Intel Exchange\nThreat intelligence from Cyware Intel Exchange (CTIX) in Microsoft Sentinel: indicator insights, and matches against your log data and other threat intelligence feeds."
+      },
+      "name": "text - header"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "0060b1b9-7b0a-5a8e-89af-311d19735209",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 2592000000
+            }
+          },
+          {
+            "id": "ec6058fa-3f77-5fd7-a7b1-59c81d87161d",
+            "version": "KqlParameterItem/1.0",
+            "name": "IOCType",
+            "label": "IOC Type",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "\"",
+            "delimiter": ",",
+            "query": "CywareCTIXIndicators\n| distinct IocType\n| sort by IocType asc",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 7776000000
+            },
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "5d9c683f-f230-5664-9996-99a27ef7ef17",
+            "version": "KqlParameterItem/1.0",
+            "name": "Source",
+            "label": "Source",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "\"",
+            "delimiter": ",",
+            "query": "CywareCTIXIndicators\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| distinct Source\n| sort by Source asc",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 7776000000
+            },
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "c31d49c9-aabd-574b-89f7-5d29258e95e6",
+            "version": "KqlParameterItem/1.0",
+            "name": "TLP",
+            "label": "TLP",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "\"",
+            "delimiter": ",",
+            "query": "CywareCTIXIndicators\n| where isnotempty(Tlp)\n| distinct Tlp\n| sort by Tlp asc",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 7776000000
+            },
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - filters"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "e47becb5-50bd-5689-a228-8769a4c0d018",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Indicators Overview",
+            "subTarget": "indicators",
+            "style": "link"
+          },
+          {
+            "id": "cf6070ac-a046-56f2-a772-25b2f0707ee8",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Correlation Overview",
+            "subTarget": "correlation",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - tabs"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Summary",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Total Indicators",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "50",
+                  "name": "query - Total Indicators"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, iocTypes=dynamic([{IOCType}]), searchAlgo=\"ASIM Parsers\")\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Total Matched Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "50",
+                  "name": "query - Total Matched Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(1d)\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Indicators: Last 24 Hours",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Indicators: Last 24 Hours"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(7d)\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Indicators: Last 7 Days",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Indicators: Last 7 Days"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(30d)\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Indicators: Last 30 Days",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Indicators: Last 30 Days"
+                }
+              ]
+            },
+            "name": "group - indicators - summary"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Indicator Status",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsWhitelisted == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Allowed Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Allowed Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsDeprecated == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Deprecated Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Deprecated Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsFalsePositive == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "False Positive Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - False Positive Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsRevoked == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Revoked Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Revoked Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where ManualReview == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Marked for Review Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Marked for Review Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsActioned == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Actioned Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Actioned Indicators Count"
+                }
+              ]
+            },
+            "name": "group - indicators - indicator-status"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Distribution",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| make-series ['Indicator Count'] = count() default = 0 on TimeGenerated from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d",
+                    "size": 0,
+                    "title": "Timeline Distribution of Indicators",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "timechart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Timeline Distribution of Indicators"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize ['Indicator Count'] = count() by Source\n| sort by ['Indicator Count'] desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Source\n| sort by ['Indicator Count'] desc",
+                    "size": 3,
+                    "title": "Top 10 Indicators Distribution by Source",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "piechart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Top 10 Indicators Distribution by Source"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize Created = make_list(TimeGenerated), Indicators = count() by Source\n| sort by Indicators desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| mv-expand Created to typeof(datetime)\n| make-series ['Indicator Count'] = count() default = 0 on Created from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d by Source\n| extend Total = array_sum(['Indicator Count'])\n| sort by Total desc\n| project-away Total",
+                    "size": 0,
+                    "title": "Source Based Timeline Chart",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "timechart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Source Based Timeline Chart"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| extend ['IOC Type'] = IocType\n| make-series ['Indicator Count'] = count() default = 0 on TimeGenerated from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d by ['IOC Type']\n| extend Total = array_sum(['Indicator Count'])\n| sort by Total desc\n| project-away Total",
+                    "size": 0,
+                    "title": "IOC Type Based Timeline Chart",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "timechart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - IOC Type Based Timeline Chart"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| sort by ['Indicator Count'] desc",
+                    "size": 0,
+                    "title": "Indicators Distribution by IOC Type",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Indicators Distribution by IOC Type"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| extend ['Risk Score'] = case(Confidence >= 70, \"High (70-100)\", Confidence >= 30, \"Medium (30-69)\", Confidence >= 1, \"Low (1-29)\", \"No Score\")\n| summarize ['Indicator Count'] = count() by ['Risk Score']\n| sort by ['Indicator Count'] desc",
+                    "size": 3,
+                    "title": "Indicators Distribution by Risk Score",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "piechart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Indicators Distribution by Risk Score"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Tag = Tags to typeof(string)\n| where isnotempty(Tag)\n| summarize ['Indicator Count'] = count() by Tag\n| top 10 by ['Indicator Count']",
+                    "size": 0,
+                    "title": "Indicators Distribution by Top 10 Tags",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Indicators Distribution by Top 10 Tags"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where isnotempty(Country) and Country !~ \"Unknown\"\n| summarize ['Indicator Count'] = count() by Country\n| sort by ['Indicator Count'] desc",
+                    "size": 0,
+                    "title": "Indicators Count by Geo Location (Country)",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "map",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "mapSettings": {
+                      "locInfo": "CountryRegion",
+                      "locInfoColumn": "Country",
+                      "sizeSettings": "Indicator Count",
+                      "sizeAggregation": "Sum",
+                      "legendMetric": "Indicator Count",
+                      "legendAggregation": "Sum",
+                      "itemColorSettings": {
+                        "type": "heatmap",
+                        "colorAggregation": "Sum",
+                        "nodeColorField": "Indicator Count",
+                        "heatmapPalette": "greenRed"
+                      }
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "50",
+                  "name": "query - Indicators Count by Geo Location (Country)"
+                }
+              ]
+            },
+            "name": "group - indicators - distribution"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Relations",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"threat-actor\"]) > 0 or array_length(Relations[\"attack-pattern\"]) > 0 or array_length(Relations[\"malware\"]) > 0 or array_length(Relations[\"campaign\"]) > 0 or array_length(Relations[\"tool\"]) > 0 or array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Indicators with Relations",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "100",
+                  "name": "query - Indicators with Relations"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Threat Actors",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"threat-actor\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Indicators with Threat Actors",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true
+                        },
+                        "customWidth": "33",
+                        "name": "query - Indicators with Threat Actors"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Threat Actor'] = iff(row_number() > 10, \"Others\", ['Threat Actor'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Threat Actor']\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Indicators Distribution by Threat Actors",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Indicators Distribution by Threat Actors"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Threat Actor'], ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Indicators by Threat Actors",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Indicators by Threat Actors"
+                      }
+                    ]
+                  },
+                  "name": "group - indicators - relations - threat-actors"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Attack Patterns",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"attack-pattern\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Indicators with Attack Patterns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true
+                        },
+                        "customWidth": "33",
+                        "name": "query - Indicators with Attack Patterns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Attack Pattern'] = iff(row_number() > 10, \"Others\", ['Attack Pattern'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Attack Pattern']\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Indicators Distribution by Attack Patterns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Indicators Distribution by Attack Patterns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Attack Pattern'], ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Indicators by Attack Patterns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Indicators by Attack Patterns"
+                      }
+                    ]
+                  },
+                  "name": "group - indicators - relations - attack-patterns"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Malware",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"malware\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Indicators with Malware",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true
+                        },
+                        "customWidth": "33",
+                        "name": "query - Indicators with Malware"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Malware = Name\n| sort by ['Indicator Count'] desc\n| extend Malware = iff(row_number() > 10, \"Others\", Malware)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Malware\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Indicators Distribution by Malware",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Indicators Distribution by Malware"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Malware = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Malware, ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Indicators by Malware",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Indicators by Malware"
+                      }
+                    ]
+                  },
+                  "name": "group - indicators - relations - malware"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Campaigns",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"campaign\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Indicators with Campaigns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true
+                        },
+                        "customWidth": "33",
+                        "name": "query - Indicators with Campaigns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Campaign = Name\n| sort by ['Indicator Count'] desc\n| extend Campaign = iff(row_number() > 10, \"Others\", Campaign)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Campaign\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Indicators Distribution by Campaigns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Indicators Distribution by Campaigns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Campaign = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Campaign, ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Indicators by Campaigns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Indicators by Campaigns"
+                      }
+                    ]
+                  },
+                  "name": "group - indicators - relations - campaigns"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Tools",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"tool\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Indicators with Tools",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true
+                        },
+                        "customWidth": "33",
+                        "name": "query - Indicators with Tools"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"tool\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Tool = Name\n| sort by ['Indicator Count'] desc\n| extend Tool = iff(row_number() > 10, \"Others\", Tool)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Tool\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Indicators Distribution by Tools",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Indicators Distribution by Tools"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"tool\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Tool = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Tool, ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Indicators by Tools",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Indicators by Tools"
+                      }
+                    ]
+                  },
+                  "name": "group - indicators - relations - tools"
+                }
+              ]
+            },
+            "name": "group - indicators - relations"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Custom Attributes and Enrichment",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Custom Attributes",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Indicators with Custom Attributes",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true
+                        },
+                        "customWidth": "33",
+                        "name": "query - Indicators with Custom Attributes"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| top 10 by ['Indicator Count']",
+                          "size": 0,
+                          "title": "Top 10 Indicators with Custom Attributes by IOC Type",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "barchart",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Indicators with Custom Attributes by IOC Type"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| sort by CtixModified desc\n| take 10000\n| project Indicator, ['IOC Type'] = IocType, ['Custom Attributes'] = CustomAttributes",
+                          "size": 0,
+                          "title": "List of Indicators with Custom Attributes",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - List of Indicators with Custom Attributes"
+                      }
+                    ]
+                  },
+                  "name": "group - indicators - custom-attributes-and-enrichment - custom-attributes"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Enrichment Data",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Indicators with Enrichment Data",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true
+                        },
+                        "customWidth": "33",
+                        "name": "query - Indicators with Enrichment Data"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| top 10 by ['Indicator Count']",
+                          "size": 0,
+                          "title": "Top 10 Indicators with Enrichment Data by IOC Type",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "barchart",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Indicators with Enrichment Data by IOC Type"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| sort by CtixModified desc\n| take 10000\n| project Indicator, ['IOC Type'] = IocType, ['Enrichment Data'] = EnrichmentData",
+                          "size": 0,
+                          "title": "List of Indicators with Enrichment Data",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - List of Indicators with Enrichment Data"
+                      }
+                    ]
+                  },
+                  "name": "group - indicators - custom-attributes-and-enrichment - enrichment-data"
+                }
+              ]
+            },
+            "name": "group - indicators - custom-attributes-and-enrichment"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Vulnerabilities",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Indicators with Vulnerabilities",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "33",
+                  "name": "query - Indicators with Vulnerabilities"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Vulnerability Report'] = Name\n| top 10 by ['Indicator Count']",
+                    "size": 0,
+                    "title": "Top 10 Indicators Distribution by Vulnerabilities",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "67",
+                  "name": "query - Top 10 Indicators Distribution by Vulnerabilities"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Vulnerability Report'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Vulnerability Report'], ['Indicator Count'], Indicators",
+                    "size": 0,
+                    "title": "Indicators by Vulnerability Reports",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "gridSettings": {
+                      "filter": true
+                    }
+                  },
+                  "customWidth": "100",
+                  "name": "query - Indicators by Vulnerability Reports"
+                }
+              ]
+            },
+            "name": "group - indicators - vulnerabilities"
+          }
+        ]
+      },
+      "name": "group - indicators overview",
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "indicators"
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "Cyware CTIX indicators matched live when the dashboard loads. Choose a **Search Matching Algorithm**:\n- **ASIM Parsers**: CTIX indicators seen in your log data, normalised by the Microsoft Sentinel ASIM parsers (network, web, DNS, DHCP, authentication, audit, file, process and registry events). Use **ASIM Parsers** to limit the log sources searched; long time ranges can take several minutes to load.\n- **ThreatIntelIndicators**: CTIX indicators also reported by the other threat intelligence feeds in this workspace.\n\nOnly active indicators (CTIX and other feeds) are considered. The Time Range applies to the matched log events or feed records."
+            },
+            "name": "text - about"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "d659cdd9-2d4b-50ef-8213-a54f06d01105",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "SearchMatchingAlgorithm",
+                  "label": "Search Matching Algorithm",
+                  "type": 2,
+                  "description": "ASIM Parsers: CTIX indicators seen in your log data. ThreatIntelIndicators: CTIX indicators also reported by the other threat intelligence feeds in this workspace.",
+                  "isRequired": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\"ASIM Parsers\", \"ThreatIntelIndicators\"]"
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - search matching algorithm"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "7dce3537-0d24-5bb0-9430-59496d800fc4",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ASIMParsers",
+                  "label": "ASIM Parsers",
+                  "type": 2,
+                  "description": "Log sources (ASIM schemas) to search for CTIX indicators.",
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "\"",
+                  "delimiter": ",",
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "selectAllValue": "*",
+                    "showDefault": false
+                  },
+                  "jsonData": "[\"NetworkSession\", \"WebSession\", \"DNS\", \"DHCP\", \"Authentication\", \"Audit\", \"FileEvent\", \"ProcessEvent\", \"RegistryEvent\"]",
+                  "defaultValue": "value::all"
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "conditionalVisibility": {
+              "parameterName": "SearchMatchingAlgorithm",
+              "comparison": "isEqualTo",
+              "value": "ASIM Parsers"
+            },
+            "name": "parameters - asim parsers"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Summary",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Total Matched Indicators",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "25",
+                  "name": "query - Total Matched Indicators"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime=ago(1d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Matched Indicators: Last 24 Hours",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "25",
+                  "name": "query - Matched Indicators: Last 24 Hours"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime=ago(7d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Matched Indicators: Last 7 Days",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "25",
+                  "name": "query - Matched Indicators: Last 7 Days"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime=ago(30d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Matched Indicators: Last 30 Days",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "25",
+                  "name": "query - Matched Indicators: Last 30 Days"
+                }
+              ]
+            },
+            "name": "group - correlation - summary"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Matched Indicator Status",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsWhitelisted == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Allowed Matched Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "33",
+                  "name": "query - Allowed Matched Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsDeprecated == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Deprecated Matched Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "33",
+                  "name": "query - Deprecated Matched Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsFalsePositive == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "False Positive Matched Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "33",
+                  "name": "query - False Positive Matched Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsRevoked == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Revoked Matched Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "33",
+                  "name": "query - Revoked Matched Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where ManualReview == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Marked for Review Matched Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "33",
+                  "name": "query - Marked for Review Matched Indicators Count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsActioned == true\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Actioned Matched Indicators Count",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "33",
+                  "name": "query - Actioned Matched Indicators Count"
+                }
+              ]
+            },
+            "name": "group - correlation - matched-indicator-status"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Distribution",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| make-series ['Indicator Count'] = count() default = 0 on LastMatchTime from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d",
+                    "size": 0,
+                    "title": "Timeline Distribution of Matched Indicators",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "timechart",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Timeline Distribution of Matched Indicators"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize ['Indicator Count'] = count() by Source\n| sort by ['Indicator Count'] desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Source\n| sort by ['Indicator Count'] desc",
+                    "size": 3,
+                    "title": "Top 10 Matched Indicators Distribution by Source",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "piechart",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Top 10 Matched Indicators Distribution by Source"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| sort by ['Indicator Count'] desc",
+                    "size": 0,
+                    "title": "Matched Indicators Distribution by IOC Type",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Matched Indicators Distribution by IOC Type"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| extend ['Risk Score'] = case(Confidence >= 70, \"High (70-100)\", Confidence >= 30, \"Medium (30-69)\", Confidence >= 1, \"Low (1-29)\", \"No Score\")\n| summarize ['Indicator Count'] = count() by ['Risk Score']\n| sort by ['Indicator Count'] desc",
+                    "size": 3,
+                    "title": "Matched Indicators Distribution by Risk Score",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "piechart",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Matched Indicators Distribution by Risk Score"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where isnotempty(Country) and Country !~ \"Unknown\"\n| summarize ['Indicator Count'] = count() by Country\n| sort by ['Indicator Count'] desc",
+                    "size": 0,
+                    "title": "Matched Indicators Count by Geo Location (Country)",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "map",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "mapSettings": {
+                      "locInfo": "CountryRegion",
+                      "locInfoColumn": "Country",
+                      "sizeSettings": "Indicator Count",
+                      "sizeAggregation": "Sum",
+                      "legendMetric": "Indicator Count",
+                      "legendAggregation": "Sum",
+                      "itemColorSettings": {
+                        "type": "heatmap",
+                        "colorAggregation": "Sum",
+                        "nodeColorField": "Indicator Count",
+                        "heatmapPalette": "greenRed"
+                      }
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Matched Indicators Count by Geo Location (Country)"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Tag = Tags to typeof(string)\n| where isnotempty(Tag)\n| summarize ['Indicator Count'] = count() by Tag\n| top 10 by ['Indicator Count']",
+                    "size": 0,
+                    "title": "Matched Indicators Distribution by Top 10 Tags",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart",
+                    "showAnalytics": true,
+                    "showRefreshButton": true,
+                    "timeContext": {
+                      "durationMs": 7776000000
+                    },
+                    "chartSettings": {
+                      "createOtherGroup": 0
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "query - Matched Indicators Distribution by Top 10 Tags"
+                }
+              ]
+            },
+            "name": "group - correlation - distribution"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Relations",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Threat Actors",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"threat-actor\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Matched Indicators with Threat Actors",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "name": "query - Matched Indicators with Threat Actors"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Threat Actor'] = iff(row_number() > 10, \"Others\", ['Threat Actor'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Threat Actor']\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Matched Indicators Distribution by Threat Actors",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Matched Indicators Distribution by Threat Actors"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Threat Actor'], ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Matched Indicators by Threat Actors",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Matched Indicators by Threat Actors"
+                      }
+                    ]
+                  },
+                  "name": "group - correlation - relations - threat-actors"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Malware",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"malware\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Matched Indicators with Malware",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "name": "query - Matched Indicators with Malware"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Malware = Name\n| sort by ['Indicator Count'] desc\n| extend Malware = iff(row_number() > 10, \"Others\", Malware)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Malware\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Matched Indicators Distribution by Malware",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Matched Indicators Distribution by Malware"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Malware = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Malware, ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Matched Indicators by Malware",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Matched Indicators by Malware"
+                      }
+                    ]
+                  },
+                  "name": "group - correlation - relations - malware"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Vulnerabilities",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Matched Indicators with Vulnerabilities",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "name": "query - Matched Indicators with Vulnerabilities"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Vulnerability Report'] = Name\n| top 10 by ['Indicator Count']",
+                          "size": 0,
+                          "title": "Top 10 Matched Indicators Distribution by Vulnerabilities",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "barchart",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Matched Indicators Distribution by Vulnerabilities"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Vulnerability Report'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Vulnerability Report'], ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Matched Indicators by Vulnerability Reports",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Matched Indicators by Vulnerability Reports"
+                      }
+                    ]
+                  },
+                  "name": "group - correlation - relations - vulnerabilities"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Attack Patterns",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"attack-pattern\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Matched Indicators with Attack Patterns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "name": "query - Matched Indicators with Attack Patterns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Attack Pattern'] = iff(row_number() > 10, \"Others\", ['Attack Pattern'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Attack Pattern']\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Matched Indicators Distribution by Attack Patterns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Matched Indicators Distribution by Attack Patterns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Attack Pattern'], ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Matched Indicators by Attack Patterns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Matched Indicators by Attack Patterns"
+                      }
+                    ]
+                  },
+                  "name": "group - correlation - relations - attack-patterns"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Campaigns",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"campaign\"]) > 0\n| summarize Count = count()",
+                          "size": 4,
+                          "title": "Matched Indicators with Campaigns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "tiles",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "tileSettings": {
+                            "leftContent": {
+                              "columnMatch": "Count",
+                              "formatter": 12,
+                              "formatOptions": {
+                                "palette": "auto"
+                              },
+                              "numberFormat": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 0
+                                }
+                              }
+                            },
+                            "showBorder": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "name": "query - Matched Indicators with Campaigns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Campaign = Name\n| sort by ['Indicator Count'] desc\n| extend Campaign = iff(row_number() > 10, \"Others\", Campaign)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Campaign\n| sort by ['Indicator Count'] desc",
+                          "size": 3,
+                          "title": "Top 10 Matched Indicators Distribution by Campaigns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "piechart",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "chartSettings": {
+                            "createOtherGroup": 0
+                          }
+                        },
+                        "customWidth": "67",
+                        "name": "query - Top 10 Matched Indicators Distribution by Campaigns"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Campaign = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Campaign, ['Indicator Count'], Indicators",
+                          "size": 0,
+                          "title": "Matched Indicators by Campaigns",
+                          "noDataMessage": "No data found for the selected filters.",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "visualization": "table",
+                          "showAnalytics": true,
+                          "showRefreshButton": true,
+                          "timeContext": {
+                            "durationMs": 7776000000
+                          },
+                          "showExportToExcel": true,
+                          "gridSettings": {
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "100",
+                        "name": "query - Matched Indicators by Campaigns"
+                      }
+                    ]
+                  },
+                  "name": "group - correlation - relations - campaigns"
+                }
+              ]
+            },
+            "name": "group - correlation - relations"
+          }
+        ]
+      },
+      "name": "group - correlation overview",
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "correlation"
+      }
+    }
+  ],
+  "fallbackResourceIds": [],
+  "fromTemplateId": "sentinel-CywareCTIX",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

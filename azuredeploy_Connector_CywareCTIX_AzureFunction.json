@@ -1,0 +1,306 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "FunctionName": {
+            "defaultValue": "CywareCTIX",
+            "minLength": 1,
+            "maxLength": 11,
+            "type": "string",
+            "metadata": {
+                "description": "Provide a unique name for the Function App. Use letters and numbers only, maximum 11 characters (default: CywareCTIX)."
+            }
+        },
+        "Location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string",
+            "metadata": {
+                "description": "Select the region where the Function App and its resources are deployed (default: resource group location)."
+            }
+        },
+        "WorkspaceID": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Provide the Workspace ID of the Log Analytics workspace where Microsoft Sentinel is enabled."
+            }
+        },
+        "AzureTenantID": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Provide the Directory (tenant) ID of the Microsoft Entra ID App Registration."
+            }
+        },
+        "AzureClientID": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Provide the Application (client) ID of the Microsoft Entra ID App Registration. The app must have the Microsoft Sentinel Contributor role on the workspace."
+            }
+        },
+        "AzureClientSecret": {
+            "type": "securestring",
+            "minLength": 1,
+            "metadata": {
+                "description": "Provide the client secret of the Microsoft Entra ID App Registration."
+            }
+        },
+        "CTIXBaseURL": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Base URL of Cyware Intel Exchange. Only secure, HTTPS based URLs are allowed. Example: https://yourtenant.cyware.com/ctixapi"
+            }
+        },
+        "CTIXAccessID": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Access ID used to integrate with Cyware Intel Exchange."
+            }
+        },
+        "CTIXSecretKey": {
+            "type": "securestring",
+            "minLength": 1,
+            "metadata": {
+                "description": "Secret Key used to integrate with Cyware Intel Exchange."
+            }
+        },
+        "SavedResultSetLabel": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Provide comma separated labels added to the Save Result Set V3 rule action in Cyware Intel Exchange. At least one label is required (exact, case-sensitive)."
+            }
+        },
+        "LookbackDays": {
+            "type": "int",
+            "defaultValue": 30,
+            "minValue": 0,
+            "metadata": {
+                "description": "Specify the number of past days to collect indicators from Cyware. This setting is only used during the initial data fetch (default: 30 days)."
+            }
+        },
+        "FetchEnrichedData": {
+            "type": "bool",
+            "defaultValue": true,
+            "allowedValues": [
+                true,
+                false
+            ],
+            "metadata": {
+                "description": "Select true to enable the fetching of enriched data (relations, custom attributes, enrichment summary and manual review status) from Cyware (default: true)."
+            }
+        },
+        "Schedule": {
+            "type": "string",
+            "metadata": {
+                "description": "Enter a valid Quartz Cron-Expression (e.g., 0 */10 * * * * for every 10 minutes)."
+            },
+            "defaultValue": "0 */10 * * * *"
+        },
+        "LogLevel": {
+            "type": "string",
+            "defaultValue": "Info",
+            "allowedValues": [
+                "Debug",
+                "Info",
+                "Warning",
+                "Error"
+            ],
+            "metadata": {
+                "description": "Select the log level of the Function App (default: Info)."
+            }
+        },
+        "AppInsightsWorkspaceResourceID": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Provide the Resource ID of the Log Analytics workspace used by Application Insights. Find it under Properties of the Log Analytics workspace."
+            }
+        }
+    },
+    "variables": {
+        "FunctionName": "[concat(toLower(trim(parameters('FunctionName'))), uniqueString(resourceGroup().id))]",
+        "StorageSuffix": "[environment().suffixes.storage]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2023-01-01",
+            "name": "[variables('FunctionName')]",
+            "location": "[parameters('Location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[variables('FunctionName')]",
+            "location": "[parameters('Location')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "ApplicationId": "[variables('FunctionName')]",
+                "WorkspaceResourceId": "[parameters('AppInsightsWorkspaceResourceID')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2023-01-01",
+            "name": "[variables('FunctionName')]",
+            "location": "[parameters('Location')]",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic"
+            },
+            "kind": "functionapp",
+            "properties": {
+                "name": "[variables('FunctionName')]",
+                "workerSize": "0",
+                "workerSizeId": "0",
+                "numberOfWorkers": "1",
+                "reserved": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2023-01-01",
+            "name": "[variables('FunctionName')]",
+            "location": "[parameters('Location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('FunctionName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('FunctionName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('FunctionName'))]"
+            ],
+            "kind": "functionapp,linux",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "name": "[variables('FunctionName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('FunctionName'))]",
+                "httpsOnly": true,
+                "clientAffinityEnabled": true,
+                "reserved": true,
+                "siteConfig": {
+                    "linuxFxVersion": "python|3.12",
+                    "minTlsVersion": "1.2",
+                    "ftpsState": "Disabled",
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~4"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "python"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('FunctionName')), '2020-02-02').InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('FunctionName')), '2020-02-02').ConnectionString]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('FunctionName')), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('FunctionName')), '2023-01-01').keys[0].value, ';EndpointSuffix=', toLower(variables('StorageSuffix')))]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('FunctionName')), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('FunctionName')), '2023-01-01').keys[0].value, ';EndpointSuffix=', toLower(variables('StorageSuffix')))]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[toLower(variables('FunctionName'))]"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "https://raw.githubusercontent.com/jbhaliya-crest/AzureSolutions/main/CywareCTIX.zip"
+                        },
+                        {
+                            "name": "CTIX_BASE_URL",
+                            "value": "[parameters('CTIXBaseURL')]"
+                        },
+                        {
+                            "name": "CTIX_ACCESS_ID",
+                            "value": "[parameters('CTIXAccessID')]"
+                        },
+                        {
+                            "name": "CTIX_SECRET_KEY",
+                            "value": "[parameters('CTIXSecretKey')]"
+                        },
+                        {
+                            "name": "CTIX_SAVED_RESULT_SET_LABEL",
+                            "value": "[parameters('SavedResultSetLabel')]"
+                        },
+                        {
+                            "name": "CTIX_LOOKBACK_DAYS",
+                            "value": "[string(parameters('LookbackDays'))]"
+                        },
+                        {
+                            "name": "CTIX_FETCH_ENRICHED_DATA",
+                            "value": "[string(parameters('FetchEnrichedData'))]"
+                        },
+                        {
+                            "name": "WORKSPACE_ID",
+                            "value": "[parameters('WorkspaceID')]"
+                        },
+                        {
+                            "name": "TENANT_ID",
+                            "value": "[parameters('AzureTenantID')]"
+                        },
+                        {
+                            "name": "CLIENT_ID",
+                            "value": "[parameters('AzureClientID')]"
+                        },
+                        {
+                            "name": "CLIENT_SECRET",
+                            "value": "[parameters('AzureClientSecret')]"
+                        },
+                        {
+                            "name": "AZURE_CLOUD",
+                            "value": "[environment().name]"
+                        },
+                        {
+                            "name": "Schedule",
+                            "value": "[parameters('Schedule')]"
+                        },
+                        {
+                            "name": "LogLevel",
+                            "value": "[parameters('LogLevel')]"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
