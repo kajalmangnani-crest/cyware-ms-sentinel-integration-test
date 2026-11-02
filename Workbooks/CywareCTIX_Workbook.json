@@ -66,8 +66,9 @@
               "showDefault": false
             },
             "timeContext": {
-              "durationMs": 7776000000
+              "durationMs": 2592000000
             },
+            "timeContextFromParameter": "TimeRange",
             "defaultValue": "value::all",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces"
@@ -91,8 +92,9 @@
               "showDefault": false
             },
             "timeContext": {
-              "durationMs": 7776000000
+              "durationMs": 2592000000
             },
+            "timeContextFromParameter": "TimeRange",
             "defaultValue": "value::all",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces"
@@ -116,8 +118,9 @@
               "showDefault": false
             },
             "timeContext": {
-              "durationMs": 7776000000
+              "durationMs": 2592000000
             },
+            "timeContextFromParameter": "TimeRange",
             "defaultValue": "value::all",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces"
@@ -182,8 +185,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -220,8 +224,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -258,7 +263,7 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 86400000
                     },
                     "showAnalytics": true,
                     "tileSettings": {
@@ -296,7 +301,7 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 604800000
                     },
                     "showAnalytics": true,
                     "tileSettings": {
@@ -334,7 +339,7 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
                     "showAnalytics": true,
                     "tileSettings": {
@@ -385,8 +390,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -423,8 +429,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -461,8 +468,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -499,8 +507,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -537,8 +546,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -575,8 +585,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -626,8 +637,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "timechart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -649,8 +661,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "piechart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -672,8 +685,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "timechart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -695,8 +709,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "timechart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -718,8 +733,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "barchart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -741,8 +757,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "piechart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -764,8 +781,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "barchart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -787,8 +805,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "map",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "mapSettings": {
                       "locInfo": "CountryRegion",
                       "locInfoColumn": "Country",
@@ -834,8 +853,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -881,8 +901,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "tiles",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -919,8 +940,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "piechart",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "chartSettings": {
@@ -942,8 +964,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "table",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "showExportToExcel": true,
@@ -979,8 +1002,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "tiles",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -1017,8 +1041,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "piechart",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "chartSettings": {
@@ -1040,8 +1065,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "table",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "showExportToExcel": true,
@@ -1077,8 +1103,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "tiles",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -1115,8 +1142,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "piechart",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "chartSettings": {
@@ -1138,8 +1166,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "table",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "showExportToExcel": true,
@@ -1175,8 +1204,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "tiles",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -1213,8 +1243,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "piechart",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "chartSettings": {
@@ -1236,8 +1267,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "table",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "showExportToExcel": true,
@@ -1273,8 +1305,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "tiles",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -1311,8 +1344,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "piechart",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "chartSettings": {
@@ -1334,8 +1368,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "table",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "showExportToExcel": true,
@@ -1384,8 +1419,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "tiles",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -1422,8 +1458,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "barchart",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "chartSettings": {
@@ -1445,8 +1482,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "table",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "showExportToExcel": true,
@@ -1482,8 +1520,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "tiles",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -1520,8 +1559,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "barchart",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "chartSettings": {
@@ -1543,8 +1583,9 @@
                           "resourceType": "microsoft.operationalinsights/workspaces",
                           "visualization": "table",
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "showExportToExcel": true,
@@ -1584,8 +1625,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "tiles",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -1622,8 +1664,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "barchart",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "chartSettings": {
@@ -1645,8 +1688,9 @@
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "showExportToExcel": true,
@@ -1679,7 +1723,7 @@
           {
             "type": 1,
             "content": {
-              "json": "Cyware CTIX indicators matched live when the dashboard loads. Choose a **Search Matching Algorithm**:\n- **ASIM Parsers**: CTIX indicators seen in your log data, normalised by the Microsoft Sentinel ASIM parsers (network, web, DNS, DHCP, authentication, audit, file, process and registry events). Use **ASIM Parsers** to limit the log sources searched; long time ranges can take several minutes to load.\n- **ThreatIntelIndicators**: CTIX indicators also reported by the other threat intelligence feeds in this workspace.\n\nOnly active indicators (CTIX and other feeds) are considered. The Time Range applies to the matched log events or feed records."
+              "json": "Cyware CTIX indicators matched live when the dashboard loads. Choose a **Search Matching Algorithm**:\n- **ASIM Parsers**: CTIX indicators seen in your log data, normalised by the Microsoft Sentinel ASIM parsers (network, web, DNS, DHCP, authentication, audit, file, process and registry events). Use **ASIM Parsers** to limit the log sources searched; long time ranges can take several minutes to load.\n- **ThreatIntelIndicators**: CTIX indicators also reported by the other threat intelligence feeds in this workspace.\n\nOnly active indicators (CTIX and other feeds) are considered; the **Allowed**, **Deprecated**, **False Positive** and **Revoked** tiles also count inactive CTIX indicators that have not expired. The Time Range applies to the matched log events or feed records."
             },
             "name": "text - about"
           },
@@ -1770,8 +1814,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -1808,7 +1853,7 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 86400000
                     },
                     "tileSettings": {
                       "leftContent": {
@@ -1846,7 +1891,7 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 604800000
                     },
                     "tileSettings": {
                       "leftContent": {
@@ -1884,7 +1929,7 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
                     "tileSettings": {
                       "leftContent": {
@@ -1925,7 +1970,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsWhitelisted == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsWhitelisted == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Allowed Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1935,8 +1980,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -1963,7 +2009,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsDeprecated == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsDeprecated == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Deprecated Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1973,8 +2019,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -2001,7 +2048,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsFalsePositive == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsFalsePositive == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "False Positive Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2011,8 +2058,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -2039,7 +2087,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsRevoked == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsRevoked == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Revoked Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2049,8 +2097,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -2087,8 +2136,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -2125,8 +2175,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "tileSettings": {
                       "leftContent": {
                         "columnMatch": "Count",
@@ -2176,8 +2227,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "chartSettings": {
                       "createOtherGroup": 0
                     }
@@ -2199,8 +2251,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "chartSettings": {
                       "createOtherGroup": 0
                     }
@@ -2222,8 +2275,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "chartSettings": {
                       "createOtherGroup": 0
                     }
@@ -2245,8 +2299,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "chartSettings": {
                       "createOtherGroup": 0
                     }
@@ -2268,8 +2323,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "mapSettings": {
                       "locInfo": "CountryRegion",
                       "locInfoColumn": "Country",
@@ -2302,8 +2358,9 @@
                     "showAnalytics": true,
                     "showRefreshButton": true,
                     "timeContext": {
-                      "durationMs": 7776000000
+                      "durationMs": 2592000000
                     },
+                    "timeContextFromParameter": "TimeRange",
                     "chartSettings": {
                       "createOtherGroup": 0
                     }
@@ -2347,8 +2404,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -2385,8 +2443,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "chartSettings": {
                             "createOtherGroup": 0
                           }
@@ -2408,8 +2467,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
                             "filter": true
@@ -2445,8 +2505,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -2483,8 +2544,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "chartSettings": {
                             "createOtherGroup": 0
                           }
@@ -2506,8 +2568,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
                             "filter": true
@@ -2543,8 +2606,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -2581,8 +2645,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "chartSettings": {
                             "createOtherGroup": 0
                           }
@@ -2604,8 +2669,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
                             "filter": true
@@ -2641,8 +2707,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -2679,8 +2746,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "chartSettings": {
                             "createOtherGroup": 0
                           }
@@ -2702,8 +2770,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
                             "filter": true
@@ -2739,8 +2808,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "tileSettings": {
                             "leftContent": {
                               "columnMatch": "Count",
@@ -2777,8 +2847,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "chartSettings": {
                             "createOtherGroup": 0
                           }
@@ -2800,8 +2871,9 @@
                           "showAnalytics": true,
                           "showRefreshButton": true,
                           "timeContext": {
-                            "durationMs": 7776000000
+                            "durationMs": 2592000000
                           },
+                          "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
                             "filter": true
