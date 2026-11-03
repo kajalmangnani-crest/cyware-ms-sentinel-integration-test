@@ -4,7 +4,7 @@
     {
       "type": 1,
       "content": {
-        "json": "# Cyware Intel Exchange\nThreat intelligence from Cyware Intel Exchange (CTIX) in Microsoft Sentinel: indicator insights, and matches against your log data and other threat intelligence feeds."
+        "json": "# Cyware Intel Exchange"
       },
       "name": "text - header"
     },
@@ -100,16 +100,16 @@
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
           {
-            "id": "c31d49c9-aabd-574b-89f7-5d29258e95e6",
+            "id": "5e0f3a52-7c1d-4b8e-9f2a-6d4c3b2a1e90",
             "version": "KqlParameterItem/1.0",
-            "name": "TLP",
-            "label": "TLP",
+            "name": "RiskScore",
+            "label": "Risk Score",
             "type": 2,
+            "description": "Filter by the CTIX confidence (risk) score: Low 0-29, Medium 30-69, High 70-100.",
             "isRequired": true,
             "multiSelect": true,
             "quote": "\"",
             "delimiter": ",",
-            "query": "CywareCTIXIndicators\n| where isnotempty(Tlp)\n| distinct Tlp\n| sort by Tlp asc",
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
@@ -117,13 +117,8 @@
               "selectAllValue": "*",
               "showDefault": false
             },
-            "timeContext": {
-              "durationMs": 2592000000
-            },
-            "timeContextFromParameter": "TimeRange",
-            "defaultValue": "value::all",
-            "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces"
+            "jsonData": "[{\"value\": \"Low\", \"label\": \"Low (0-29)\"}, {\"value\": \"Medium\", \"label\": \"Medium (30-69)\"}, {\"value\": \"High\", \"label\": \"High (70-100)\"}]",
+            "defaultValue": "value::all"
           }
         ],
         "style": "pills",
@@ -177,7 +172,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| summarize Count = count()",
                     "size": 4,
                     "title": "Total Indicators",
                     "noDataMessage": "No data found for the selected filters.",
@@ -216,7 +211,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, iocTypes=dynamic([{IOCType}]), searchAlgo=\"ASIM Parsers\")\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, iocTypes=dynamic([{IOCType}]), searchAlgo=\"ASIM Parsers\")\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
                     "size": 4,
                     "title": "Total Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -255,7 +250,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(1d)\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(1d)\n| summarize Count = count()",
                     "size": 4,
                     "title": "Indicators: Last 24 Hours",
                     "noDataMessage": "No data found for the selected filters.",
@@ -286,14 +281,14 @@
                     },
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Indicators: Last 24 Hours"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(7d)\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(7d)\n| summarize Count = count()",
                     "size": 4,
                     "title": "Indicators: Last 7 Days",
                     "noDataMessage": "No data found for the selected filters.",
@@ -324,14 +319,52 @@
                     },
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Indicators: Last 7 Days"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(30d)\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(15d)\n| summarize Count = count()",
+                    "size": 4,
+                    "title": "Indicators: Last 15 Days",
+                    "noDataMessage": "No data found for the selected filters.",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "tiles",
+                    "timeContext": {
+                      "durationMs": 1296000000
+                    },
+                    "showAnalytics": true,
+                    "tileSettings": {
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true,
+                            "maximumFractionDigits": 0
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    },
+                    "showRefreshButton": true
+                  },
+                  "customWidth": "50",
+                  "name": "query - Indicators: Last 15 Days"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated > ago(30d)\n| summarize Count = count()",
                     "size": 4,
                     "title": "Indicators: Last 30 Days",
                     "noDataMessage": "No data found for the selected filters.",
@@ -362,11 +395,12 @@
                     },
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Indicators: Last 30 Days"
                 }
               ]
             },
+            "customWidth": "50",
             "name": "group - indicators - summary"
           },
           {
@@ -382,7 +416,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsWhitelisted == true\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsWhitelisted == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Allowed Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -414,14 +448,14 @@
                     "showAnalytics": true,
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Allowed Indicators Count"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsDeprecated == true\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n// Deprecated in CTIX, or expired (valid until has passed)\n| where IsDeprecated == true or ValidUntil < now()\n| summarize Count = count()",
                     "size": 4,
                     "title": "Deprecated Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -453,14 +487,14 @@
                     "showAnalytics": true,
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Deprecated Indicators Count"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsFalsePositive == true\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsFalsePositive == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "False Positive Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -492,14 +526,14 @@
                     "showAnalytics": true,
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - False Positive Indicators Count"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsRevoked == true\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsRevoked == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Revoked Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -531,14 +565,14 @@
                     "showAnalytics": true,
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Revoked Indicators Count"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where ManualReview == true\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where ManualReview == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Marked for Review Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -570,14 +604,14 @@
                     "showAnalytics": true,
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Marked for Review Indicators Count"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsActioned == true\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where IsActioned == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Actioned Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -609,11 +643,12 @@
                     "showAnalytics": true,
                     "showRefreshButton": true
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "name": "query - Actioned Indicators Count"
                 }
               ]
             },
+            "customWidth": "50",
             "name": "group - indicators - indicator-status"
           },
           {
@@ -629,7 +664,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| make-series ['Indicator Count'] = count() default = 0 on TimeGenerated from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| make-series ['Indicator Count'] = count() default = 0 on TimeGenerated from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d",
                     "size": 0,
                     "title": "Timeline Distribution of Indicators",
                     "noDataMessage": "No data found for the selected filters.",
@@ -653,7 +688,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize ['Indicator Count'] = count() by Source\n| sort by ['Indicator Count'] desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Source\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize ['Indicator Count'] = count() by Source\n| sort by ['Indicator Count'] desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Source\n| sort by ['Indicator Count'] desc",
                     "size": 3,
                     "title": "Top 10 Indicators Distribution by Source",
                     "noDataMessage": "No data found for the selected filters.",
@@ -677,7 +712,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize Created = make_list(TimeGenerated), Indicators = count() by Source\n| sort by Indicators desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| mv-expand Created to typeof(datetime)\n| make-series ['Indicator Count'] = count() default = 0 on Created from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d by Source\n| extend Total = array_sum(['Indicator Count'])\n| sort by Total desc\n| project-away Total",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize Created = make_list(TimeGenerated), Indicators = count() by Source\n| sort by Indicators desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| mv-expand Created to typeof(datetime)\n| make-series ['Indicator Count'] = count() default = 0 on Created from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d by Source\n| extend Total = array_sum(['Indicator Count'])\n| sort by Total desc\n| project-away Total",
                     "size": 0,
                     "title": "Source Based Timeline Chart",
                     "noDataMessage": "No data found for the selected filters.",
@@ -701,7 +736,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| extend ['IOC Type'] = IocType\n| make-series ['Indicator Count'] = count() default = 0 on TimeGenerated from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d by ['IOC Type']\n| extend Total = array_sum(['Indicator Count'])\n| sort by Total desc\n| project-away Total",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| extend ['IOC Type'] = IocType\n| make-series ['Indicator Count'] = count() default = 0 on TimeGenerated from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d by ['IOC Type']\n| extend Total = array_sum(['Indicator Count'])\n| sort by Total desc\n| project-away Total",
                     "size": 0,
                     "title": "IOC Type Based Timeline Chart",
                     "noDataMessage": "No data found for the selected filters.",
@@ -725,7 +760,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| sort by ['Indicator Count'] desc",
                     "size": 0,
                     "title": "Indicators Distribution by IOC Type",
                     "noDataMessage": "No data found for the selected filters.",
@@ -749,7 +784,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| extend ['Risk Score'] = case(Confidence >= 70, \"High (70-100)\", Confidence >= 30, \"Medium (30-69)\", Confidence >= 1, \"Low (1-29)\", \"No Score\")\n| summarize ['Indicator Count'] = count() by ['Risk Score']\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| extend ['Risk Score'] = case(Confidence >= 70, \"High (70-100)\", Confidence >= 30, \"Medium (30-69)\", Confidence >= 0, \"Low (0-29)\", \"No Score\")\n| summarize ['Indicator Count'] = count() by ['Risk Score']\n| sort by ['Indicator Count'] desc",
                     "size": 3,
                     "title": "Indicators Distribution by Risk Score",
                     "noDataMessage": "No data found for the selected filters.",
@@ -773,7 +808,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Tag = Tags to typeof(string)\n| where isnotempty(Tag)\n| summarize ['Indicator Count'] = count() by Tag\n| top 10 by ['Indicator Count']",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Tag = Tags to typeof(string)\n| where isnotempty(Tag)\n| summarize ['Indicator Count'] = count() by Tag\n| top 10 by ['Indicator Count']",
                     "size": 0,
                     "title": "Indicators Distribution by Top 10 Tags",
                     "noDataMessage": "No data found for the selected filters.",
@@ -797,7 +832,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where isnotempty(Country) and Country !~ \"Unknown\"\n| summarize ['Indicator Count'] = count() by Country\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where isnotempty(Country) and Country !~ \"Unknown\"\n| summarize ['Indicator Count'] = count() by Country\n| sort by ['Indicator Count'] desc",
                     "size": 0,
                     "title": "Indicators Count by Geo Location (Country)",
                     "noDataMessage": "No data found for the selected filters.",
@@ -845,7 +880,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"threat-actor\"]) > 0 or array_length(Relations[\"attack-pattern\"]) > 0 or array_length(Relations[\"malware\"]) > 0 or array_length(Relations[\"campaign\"]) > 0 or array_length(Relations[\"tool\"]) > 0 or array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"threat-actor\"]) > 0 or array_length(Relations[\"attack-pattern\"]) > 0 or array_length(Relations[\"malware\"]) > 0 or array_length(Relations[\"campaign\"]) > 0 or array_length(Relations[\"tool\"]) > 0 or array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
                     "size": 4,
                     "title": "Indicators with Relations",
                     "noDataMessage": "No data found for the selected filters.",
@@ -893,7 +928,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"threat-actor\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"threat-actor\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Indicators with Threat Actors",
                           "noDataMessage": "No data found for the selected filters.",
@@ -932,7 +967,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Threat Actor'] = iff(row_number() > 10, \"Others\", ['Threat Actor'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Threat Actor']\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Threat Actor'] = iff(row_number() > 10, \"Others\", ['Threat Actor'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Threat Actor']\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Indicators Distribution by Threat Actors",
                           "noDataMessage": "No data found for the selected filters.",
@@ -956,7 +991,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Threat Actor'], ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Threat Actor'], ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Indicators by Threat Actors",
                           "noDataMessage": "No data found for the selected filters.",
@@ -971,7 +1006,8 @@
                           "showRefreshButton": true,
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -994,7 +1030,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"attack-pattern\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"attack-pattern\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Indicators with Attack Patterns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1033,7 +1069,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Attack Pattern'] = iff(row_number() > 10, \"Others\", ['Attack Pattern'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Attack Pattern']\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Attack Pattern'] = iff(row_number() > 10, \"Others\", ['Attack Pattern'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Attack Pattern']\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Indicators Distribution by Attack Patterns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1057,7 +1093,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Attack Pattern'], ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Attack Pattern'], ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Indicators by Attack Patterns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1072,7 +1108,8 @@
                           "showRefreshButton": true,
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -1095,7 +1132,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"malware\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"malware\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Indicators with Malware",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1134,7 +1171,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Malware = Name\n| sort by ['Indicator Count'] desc\n| extend Malware = iff(row_number() > 10, \"Others\", Malware)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Malware\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Malware = Name\n| sort by ['Indicator Count'] desc\n| extend Malware = iff(row_number() > 10, \"Others\", Malware)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Malware\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Indicators Distribution by Malware",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1158,7 +1195,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Malware = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Malware, ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Malware = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Malware, ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Indicators by Malware",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1173,7 +1210,8 @@
                           "showRefreshButton": true,
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -1196,7 +1234,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"campaign\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"campaign\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Indicators with Campaigns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1235,7 +1273,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Campaign = Name\n| sort by ['Indicator Count'] desc\n| extend Campaign = iff(row_number() > 10, \"Others\", Campaign)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Campaign\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Campaign = Name\n| sort by ['Indicator Count'] desc\n| extend Campaign = iff(row_number() > 10, \"Others\", Campaign)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Campaign\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Indicators Distribution by Campaigns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1259,7 +1297,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Campaign = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Campaign, ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Campaign = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Campaign, ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Indicators by Campaigns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1274,7 +1312,8 @@
                           "showRefreshButton": true,
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -1297,7 +1336,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"tool\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"tool\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Indicators with Tools",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1336,7 +1375,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"tool\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Tool = Name\n| sort by ['Indicator Count'] desc\n| extend Tool = iff(row_number() > 10, \"Others\", Tool)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Tool\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"tool\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Tool = Name\n| sort by ['Indicator Count'] desc\n| extend Tool = iff(row_number() > 10, \"Others\", Tool)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Tool\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Indicators Distribution by Tools",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1360,7 +1399,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"tool\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Tool = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Tool, ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"tool\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Tool = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Tool, ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Indicators by Tools",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1375,7 +1414,8 @@
                           "showRefreshButton": true,
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -1411,7 +1451,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| summarize Count = count()",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| summarize Count = count()",
                           "size": 4,
                           "title": "Indicators with Custom Attributes",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1450,7 +1490,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| top 10 by ['Indicator Count']",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| top 10 by ['Indicator Count']",
                           "size": 0,
                           "title": "Top 10 Indicators with Custom Attributes by IOC Type",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1474,7 +1514,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| sort by CtixModified desc\n| take 10000\n| project Indicator, ['IOC Type'] = IocType, ['Custom Attributes'] = CustomAttributes",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(CustomAttributes) !in (\"\", \"[]\", \"{}\")\n| sort by CtixModified desc\n| take 10000\n| project Indicator, ['IOC Type'] = IocType, ['Custom Attributes'] = CustomAttributes",
                           "size": 0,
                           "title": "List of Indicators with Custom Attributes",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1489,7 +1529,8 @@
                           "showRefreshButton": true,
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -1512,7 +1553,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| summarize Count = count()",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| summarize Count = count()",
                           "size": 4,
                           "title": "Indicators with Enrichment Data",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1551,7 +1592,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| top 10 by ['Indicator Count']",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| top 10 by ['Indicator Count']",
                           "size": 0,
                           "title": "Top 10 Indicators with Enrichment Data by IOC Type",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1575,7 +1616,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| sort by CtixModified desc\n| take 10000\n| project Indicator, ['IOC Type'] = IocType, ['Enrichment Data'] = EnrichmentData",
+                          "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where tostring(EnrichmentData) !in (\"\", \"[]\", \"{}\")\n| sort by CtixModified desc\n| take 10000\n| project Indicator, ['IOC Type'] = IocType, ['Enrichment Data'] = EnrichmentData",
                           "size": 0,
                           "title": "List of Indicators with Enrichment Data",
                           "noDataMessage": "No data found for the selected filters.",
@@ -1590,7 +1631,8 @@
                           "showRefreshButton": true,
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -1617,7 +1659,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| where array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
                     "size": 4,
                     "title": "Indicators with Vulnerabilities",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1656,7 +1698,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Vulnerability Report'] = Name\n| top 10 by ['Indicator Count']",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Vulnerability Report'] = Name\n| top 10 by ['Indicator Count']",
                     "size": 0,
                     "title": "Top 10 Indicators Distribution by Vulnerabilities",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1680,7 +1722,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Vulnerability Report'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Vulnerability Report'], ['Indicator Count'], Indicators",
+                    "query": "CywareCTIXIndicators\n| where \"*\" in ({IOCType}) or IocType in ({IOCType})\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where TimeGenerated {TimeRange}\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Vulnerability Report'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Vulnerability Report'], ['Indicator Count'], Indicators",
                     "size": 0,
                     "title": "Indicators by Vulnerability Reports",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1695,7 +1737,8 @@
                     "showRefreshButton": true,
                     "showExportToExcel": true,
                     "gridSettings": {
-                      "filter": true
+                      "filter": true,
+                      "rowLimit": 10000
                     }
                   },
                   "customWidth": "100",
@@ -1723,7 +1766,8 @@
           {
             "type": 1,
             "content": {
-              "json": "Cyware CTIX indicators matched live when the dashboard loads. Choose a **Search Matching Algorithm**:\n- **ASIM Parsers**: CTIX indicators seen in your log data, normalised by the Microsoft Sentinel ASIM parsers (network, web, DNS, DHCP, authentication, audit, file, process and registry events). Use **ASIM Parsers** to limit the log sources searched; long time ranges can take several minutes to load.\n- **ThreatIntelIndicators**: CTIX indicators also reported by the other threat intelligence feeds in this workspace.\n\nOnly active indicators (CTIX and other feeds) are considered; the **Allowed**, **Deprecated**, **False Positive** and **Revoked** tiles also count inactive CTIX indicators that have not expired. The Time Range applies to the matched log events or feed records."
+              "json": "## How the Correlation Overview works\n- Cyware CTIX indicators are matched **live** when the dashboard loads; nothing is stored.\n- Choose a **Search Matching Algorithm**:\n  - **ASIM Parsers**: CTIX indicators seen in your log data, normalised by the Microsoft Sentinel ASIM parsers. Use the **ASIM Parsers** filter to limit the log sources searched.\n  - **ThreatIntelIndicators**: CTIX indicators also reported by the other threat intelligence feeds in this workspace.\n- The **Time Range** applies to both the CTIX indicators and the matched log events or feed records.\n- Only **active** indicators (CTIX and other feeds) are considered. The **Allowed**, **False Positive** and **Revoked** tiles also count inactive CTIX indicators that have not expired. The **Deprecated** tile counts CTIX indicators that are deprecated or expired (valid until has passed).\n\n**Note**: Results may take a few minutes to load when a long Time Range is selected.",
+              "style": "upsell"
             },
             "name": "text - about"
           },
@@ -1804,7 +1848,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
                     "size": 4,
                     "title": "Total Matched Indicators",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1843,7 +1887,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime=ago(1d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime=ago(1d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
                     "size": 4,
                     "title": "Matched Indicators: Last 24 Hours",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1881,7 +1925,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime=ago(7d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime=ago(7d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
                     "size": 4,
                     "title": "Matched Indicators: Last 7 Days",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1919,7 +1963,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime=ago(30d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime=ago(30d), endtime=now(), asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize Count = count()",
                     "size": 4,
                     "title": "Matched Indicators: Last 30 Days",
                     "noDataMessage": "No data found for the selected filters.",
@@ -1970,7 +2014,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsWhitelisted == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsWhitelisted == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Allowed Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2009,7 +2053,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsDeprecated == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true, includeExpired=true)\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n// Deprecated in CTIX, or expired (valid until has passed)\n| where IsDeprecated == true or ValidUntil < now()\n| summarize Count = count()",
                     "size": 4,
                     "title": "Deprecated Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2048,7 +2092,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsFalsePositive == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsFalsePositive == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "False Positive Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2087,7 +2131,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsRevoked == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}', includeInactive=true)\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsRevoked == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Revoked Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2126,7 +2170,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where ManualReview == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where ManualReview == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Marked for Review Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2165,7 +2209,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsActioned == true\n| summarize Count = count()",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where IsActioned == true\n| summarize Count = count()",
                     "size": 4,
                     "title": "Actioned Matched Indicators Count",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2217,7 +2261,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| make-series ['Indicator Count'] = count() default = 0 on LastMatchTime from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| make-series ['Indicator Count'] = count() default = 0 on LastMatchTime from startofday({TimeRange:start}) to startofday({TimeRange:end}) + 1d step 1d",
                     "size": 0,
                     "title": "Timeline Distribution of Matched Indicators",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2241,7 +2285,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize ['Indicator Count'] = count() by Source\n| sort by ['Indicator Count'] desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Source\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Source = Sources to typeof(string)\n| where isnotempty(Source)\n| summarize ['Indicator Count'] = count() by Source\n| sort by ['Indicator Count'] desc\n| extend Source = iff(row_number() > 10, \"Others\", Source)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Source\n| sort by ['Indicator Count'] desc",
                     "size": 3,
                     "title": "Top 10 Matched Indicators Distribution by Source",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2265,7 +2309,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| summarize ['Indicator Count'] = count() by ['IOC Type'] = IocType\n| sort by ['Indicator Count'] desc",
                     "size": 0,
                     "title": "Matched Indicators Distribution by IOC Type",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2289,7 +2333,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| extend ['Risk Score'] = case(Confidence >= 70, \"High (70-100)\", Confidence >= 30, \"Medium (30-69)\", Confidence >= 1, \"Low (1-29)\", \"No Score\")\n| summarize ['Indicator Count'] = count() by ['Risk Score']\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| extend ['Risk Score'] = case(Confidence >= 70, \"High (70-100)\", Confidence >= 30, \"Medium (30-69)\", Confidence >= 0, \"Low (0-29)\", \"No Score\")\n| summarize ['Indicator Count'] = count() by ['Risk Score']\n| sort by ['Indicator Count'] desc",
                     "size": 3,
                     "title": "Matched Indicators Distribution by Risk Score",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2313,7 +2357,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where isnotempty(Country) and Country !~ \"Unknown\"\n| summarize ['Indicator Count'] = count() by Country\n| sort by ['Indicator Count'] desc",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where isnotempty(Country) and Country !~ \"Unknown\"\n| summarize ['Indicator Count'] = count() by Country\n| sort by ['Indicator Count'] desc",
                     "size": 0,
                     "title": "Matched Indicators Count by Geo Location (Country)",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2348,7 +2392,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Tag = Tags to typeof(string)\n| where isnotempty(Tag)\n| summarize ['Indicator Count'] = count() by Tag\n| top 10 by ['Indicator Count']",
+                    "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Tag = Tags to typeof(string)\n| where isnotempty(Tag)\n| summarize ['Indicator Count'] = count() by Tag\n| top 10 by ['Indicator Count']",
                     "size": 0,
                     "title": "Matched Indicators Distribution by Top 10 Tags",
                     "noDataMessage": "No data found for the selected filters.",
@@ -2394,7 +2438,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"threat-actor\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"threat-actor\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Matched Indicators with Threat Actors",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2433,7 +2477,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Threat Actor'] = iff(row_number() > 10, \"Others\", ['Threat Actor'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Threat Actor']\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Threat Actor'] = iff(row_number() > 10, \"Others\", ['Threat Actor'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Threat Actor']\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Matched Indicators Distribution by Threat Actors",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2457,7 +2501,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Threat Actor'], ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"threat-actor\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Threat Actor'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Threat Actor'], ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Matched Indicators by Threat Actors",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2472,7 +2516,8 @@
                           "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -2495,7 +2540,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"malware\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"malware\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Matched Indicators with Malware",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2534,7 +2579,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Malware = Name\n| sort by ['Indicator Count'] desc\n| extend Malware = iff(row_number() > 10, \"Others\", Malware)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Malware\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Malware = Name\n| sort by ['Indicator Count'] desc\n| extend Malware = iff(row_number() > 10, \"Others\", Malware)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Malware\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Matched Indicators Distribution by Malware",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2558,7 +2603,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Malware = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Malware, ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"malware\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Malware = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Malware, ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Matched Indicators by Malware",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2573,7 +2618,8 @@
                           "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -2596,7 +2642,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"report\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Matched Indicators with Vulnerabilities",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2635,7 +2681,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Vulnerability Report'] = Name\n| top 10 by ['Indicator Count']",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Vulnerability Report'] = Name\n| top 10 by ['Indicator Count']",
                           "size": 0,
                           "title": "Top 10 Matched Indicators Distribution by Vulnerabilities",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2659,7 +2705,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Vulnerability Report'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Vulnerability Report'], ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"report\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Vulnerability Report'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Vulnerability Report'], ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Matched Indicators by Vulnerability Reports",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2674,7 +2720,8 @@
                           "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -2697,7 +2744,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"attack-pattern\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"attack-pattern\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Matched Indicators with Attack Patterns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2736,7 +2783,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Attack Pattern'] = iff(row_number() > 10, \"Others\", ['Attack Pattern'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Attack Pattern']\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| extend ['Attack Pattern'] = iff(row_number() > 10, \"Others\", ['Attack Pattern'])\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by ['Attack Pattern']\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Matched Indicators Distribution by Attack Patterns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2760,7 +2807,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Attack Pattern'], ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"attack-pattern\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by ['Attack Pattern'] = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project ['Attack Pattern'], ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Matched Indicators by Attack Patterns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2775,7 +2822,8 @@
                           "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
@@ -2798,7 +2846,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"campaign\"]) > 0\n| summarize Count = count()",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| where array_length(Relations[\"campaign\"]) > 0\n| summarize Count = count()",
                           "size": 4,
                           "title": "Matched Indicators with Campaigns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2837,7 +2885,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Campaign = Name\n| sort by ['Indicator Count'] desc\n| extend Campaign = iff(row_number() > 10, \"Others\", Campaign)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Campaign\n| sort by ['Indicator Count'] desc",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count() by Campaign = Name\n| sort by ['Indicator Count'] desc\n| extend Campaign = iff(row_number() > 10, \"Others\", Campaign)\n| summarize ['Indicator Count'] = sum(['Indicator Count']) by Campaign\n| sort by ['Indicator Count'] desc",
                           "size": 3,
                           "title": "Top 10 Matched Indicators Distribution by Campaigns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2861,7 +2909,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({TLP}) or Tlp in ({TLP})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Campaign = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Campaign, ['Indicator Count'], Indicators",
+                          "query": "CywareCTIXCorrelate(starttime={TimeRange:start}, endtime={TimeRange:end}, asimParsers=dynamic([{ASIMParsers}]), iocTypes=dynamic([{IOCType}]), searchAlgo='{SearchMatchingAlgorithm}')\n| where \"*\" in ({RiskScore}) or case(Confidence >= 70, \"High\", Confidence >= 30, \"Medium\", Confidence >= 0, \"Low\", \"\") in ({RiskScore})\n| where \"*\" in ({Source}) or array_length(set_intersect(Sources, dynamic([{Source}]))) > 0\n| mv-expand Name = Relations[\"campaign\"] to typeof(string)\n| where isnotempty(Name)\n| summarize ['Indicator Count'] = count(), Indicators = make_set(Indicator, 100) by Campaign = Name\n| sort by ['Indicator Count'] desc\n| take 10000\n| project Campaign, ['Indicator Count'], Indicators",
                           "size": 0,
                           "title": "Matched Indicators by Campaigns",
                           "noDataMessage": "No data found for the selected filters.",
@@ -2876,7 +2924,8 @@
                           "timeContextFromParameter": "TimeRange",
                           "showExportToExcel": true,
                           "gridSettings": {
-                            "filter": true
+                            "filter": true,
+                            "rowLimit": 10000
                           }
                         },
                         "customWidth": "100",
