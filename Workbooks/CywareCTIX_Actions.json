@@ -267,7 +267,7 @@
           {
             "type": 1,
             "content": {
-              "json": "Selected indicator: **{SelectedIndicator}**"
+              "json": "Selected indicator: **`{SelectedIndicator}`**"
             },
             "name": "text - selected indicator",
             "conditionalVisibilities": [
@@ -434,7 +434,7 @@
                           "body": "{\"title\": \"{Title:escapejson}\", \"indicatorType\": \"{IndicatorType}\", \"indicatorValue\": \"{IndicatorValue:escapejson}\", \"confidence\": \"{Confidence:escapejson}\", \"tlp\": \"{IndicatorTLP}\", \"tags\": \"{Tags:escapejson}\", \"deprecatesAfterDays\": \"{DeprecatesAfterDays:escapejson}\"}",
                           "httpMethod": "POST",
                           "title": "Add New Indicator",
-                          "description": "# Add New Indicator\nThis runs the **Cyware CTIX - Add New Indicator** playbook and adds **{IndicatorValue}** ({IndicatorType}) to Cyware Intel Exchange with TLP **{IndicatorTLP}**, confidence **{Confidence}** and deprecation after **{DeprecatesAfterDays}** days.\n\nReview the request below, then select **Add Indicator** to confirm.",
+                          "description": "# Add New Indicator\nThis runs the **Cyware CTIX - Add New Indicator** playbook and adds **`{IndicatorValue}`** ({IndicatorType}) to Cyware Intel Exchange with TLP **{IndicatorTLP}**, confidence **{Confidence}** and deprecation after **{DeprecatesAfterDays}** days.\n\nReview the request below, then select **Add Indicator** to confirm.",
                           "runLabel": "Add Indicator"
                         },
                         "linkIsContextBlade": true
@@ -669,7 +669,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "Indicator: **{SelectedIndicator}**"
+                    "json": "Indicator: **`{SelectedIndicator}`**"
                   },
                   "conditionalVisibilities": [
                     {
@@ -736,7 +736,7 @@
                           "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{SelectedCtixId}\", \"objectType\": \"indicator\"}",
                           "httpMethod": "POST",
                           "title": "Update Indicator Status",
-                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **`{SelectedIndicator}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
                           "runLabel": "Update Indicator"
                         }
                       }
@@ -788,7 +788,7 @@
                           "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{SelectedCtixId}\", \"objectType\": \"indicator\", \"undeprecateDays\": \"{IndicatorUndeprecateDays:escapejson}\"}",
                           "httpMethod": "POST",
                           "title": "Update Indicator Status",
-                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **`{SelectedIndicator}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
                           "runLabel": "Update Indicator"
                         }
                       }
@@ -1238,7 +1238,7 @@
                           "body": "{\"indicatorType\": \"{AllowlistSelectedType}\", \"indicatorValue\": \"{AllowlistSelectedValue:escapejson}\", \"reason\": \"{AllowlistReason:escapejson}\"}",
                           "httpMethod": "POST",
                           "title": "Add Indicator to Allowlist",
-                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **{AllowlistSelectedValue:escapejson}** ({AllowlistSelectedType}) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
+                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **`{AllowlistSelectedValue:escapejson}`** ({AllowlistSelectedType}) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
                           "runLabel": "Add to Allowlist"
                         }
                       }
@@ -1324,7 +1324,7 @@
                           "body": "{\"indicatorType\": \"{AllowlistType}\", \"indicatorValue\": \"{AllowlistValue:escapejson}\", \"reason\": \"{AllowlistReason:escapejson}\"}",
                           "httpMethod": "POST",
                           "title": "Add Indicator to Allowlist",
-                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **{AllowlistValue:escapejson}** ({AllowlistType}) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
+                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **`{AllowlistValue:escapejson}`** ({AllowlistType}) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
                           "runLabel": "Add to Allowlist"
                         }
                       }
@@ -1555,6 +1555,19 @@
                   "name": "text - tags - select"
                 },
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "Indicator: **`{SelectedIndicator}`**"
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "text - tags - selected indicator"
+                },
+                {
                   "type": 11,
                   "content": {
                     "version": "LinkItem/1.0",
@@ -1573,7 +1586,7 @@
                           "body": "{\n  \"action\": \"{TagAction}\",\n  \"tags\": \"{TagNames:escapejson}\",\n  \"indicatorId\": \"{SelectedCtixId}\"\n}",
                           "httpMethod": "POST",
                           "title": "Update Tags",
-                          "description": "# Update Tags\nThis runs the **Cyware CTIX - Add or Remove Indicator Tags** playbook and changes the tags of **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Tags** to confirm.",
+                          "description": "# Update Tags\nThis runs the **Cyware CTIX - Add or Remove Indicator Tags** playbook and changes the tags of **`{SelectedIndicator}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Tags** to confirm.",
                           "runLabel": "Update Tags"
                         }
                       }
@@ -1758,6 +1771,19 @@
                   "name": "text - note - select"
                 },
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "Indicator: **`{SelectedIndicator}`**"
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "text - note - selected indicator"
+                },
+                {
                   "type": 11,
                   "content": {
                     "version": "LinkItem/1.0",
@@ -1776,7 +1802,7 @@
                           "body": "{\n  \"note\": \"{NoteText:escapejson}\",\n  \"indicatorId\": \"{SelectedCtixId}\"\n}",
                           "httpMethod": "POST",
                           "title": "Add Note",
-                          "description": "# Add Note\nThis runs the **Cyware CTIX - Add Note to Indicator** playbook and changes **{SelectedIndicator}** by adding a note in Cyware Intel Exchange.\n\nReview the request below, then select **Add Note** to confirm.",
+                          "description": "# Add Note\nThis runs the **Cyware CTIX - Add Note to Indicator** playbook and changes **`{SelectedIndicator}`** by adding a note in Cyware Intel Exchange.\n\nReview the request below, then select **Add Note** to confirm.",
                           "runLabel": "Add Note"
                         }
                       }
@@ -2194,6 +2220,19 @@
                   "name": "text - analyst score - select"
                 },
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "Indicator: **`{SelectedIndicator}`**"
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "text - analyst score - selected indicator"
+                },
+                {
                   "type": 11,
                   "content": {
                     "version": "LinkItem/1.0",
@@ -2212,7 +2251,7 @@
                           "body": "{\n  \"score\": {Score},\n  \"indicatorId\": \"{SelectedCtixId}\"\n}",
                           "httpMethod": "POST",
                           "title": "Set Analyst Score",
-                          "description": "# Set Analyst Score\nThis runs the **Cyware CTIX - Update Indicator Analyst Score** playbook and changes the analyst score of **{SelectedIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Set Analyst Score** to confirm.",
+                          "description": "# Set Analyst Score\nThis runs the **Cyware CTIX - Update Indicator Analyst Score** playbook and changes the analyst score of **`{SelectedIndicator}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Set Analyst Score** to confirm.",
                           "runLabel": "Set Analyst Score"
                         }
                       }
@@ -2521,7 +2560,7 @@
                       {
                         "type": 1,
                         "content": {
-                          "json": "### Watchlist actions for **{SelectedOtherIndicator}**"
+                          "json": "### Watchlist actions for **`{SelectedOtherIndicator}`**"
                         },
                         "name": "text - watchlist selected"
                       },
@@ -2544,7 +2583,7 @@
                                 "body": "{\n  \"value\": \"{SelectedOtherIndicator:escapejson}\"\n}",
                                 "httpMethod": "POST",
                                 "title": "Add to CTIX Watchlist",
-                                "description": "# Add to CTIX Watchlist\nThis runs the **Cyware CTIX - Add Indicator to Watchlist** playbook and changes the watchlist by adding **{SelectedOtherIndicator}** in Cyware Intel Exchange.\n\nReview the request below, then select **Add to CTIX Watchlist** to confirm.",
+                                "description": "# Add to CTIX Watchlist\nThis runs the **Cyware CTIX - Add Indicator to Watchlist** playbook and changes the watchlist by adding **`{SelectedOtherIndicator}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Add to CTIX Watchlist** to confirm.",
                                 "runLabel": "Add to CTIX Watchlist"
                               }
                             }
@@ -2581,7 +2620,7 @@
                                 "body": "{\n  \"value\": \"{SelectedOtherIndicator:escapejson}\"\n}",
                                 "httpMethod": "POST",
                                 "title": "Get Occurrences",
-                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **{SelectedOtherIndicator}** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
+                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **`{SelectedOtherIndicator}`** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
                                 "runLabel": "Get Occurrences"
                               }
                             }
