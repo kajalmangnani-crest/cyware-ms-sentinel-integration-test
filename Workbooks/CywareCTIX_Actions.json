@@ -2345,7 +2345,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "Add or remove CTIX tags on a CTIX Threat Bulletin. Threat Bulletins are not ingested into Microsoft Sentinel, so enter the bulletin ID from CTIX."
+                    "json": "Add or remove CTIX tags on a CTIX Threat Bulletin. Threat Bulletins are not ingested into Microsoft Sentinel, so enter the bulletin's exact title (case-sensitive) or its ID from CTIX."
                   },
                   "name": "text - bulletin about"
                 },
@@ -2377,9 +2377,9 @@
                         "id": "143b06d7-dd67-554b-adbc-3c3bad7cec3d",
                         "version": "KqlParameterItem/1.0",
                         "name": "BulletinId",
-                        "label": "Threat Bulletin ID",
+                        "label": "Threat Bulletin (title or ID)",
                         "type": 1,
-                        "description": "ID of the CTIX Threat Bulletin.",
+                        "description": "The bulletin's exact title as in CTIX (case-sensitive), or its ID.",
                         "timeContext": {
                           "durationMs": 86400000
                         }
@@ -2434,10 +2434,10 @@
                           "path": "{PlaybookBulletinTags}/triggers/manual/run?api-version=2016-10-01",
                           "headers": [],
                           "params": [],
-                          "body": "{\n  \"bulletinId\": \"{BulletinId:escapejson}\",\n  \"action\": \"{BulletinTagAction}\",\n  \"tags\": \"{BulletinTagNames:escapejson}\"\n}",
+                          "body": "{\n  \"bulletin\": \"{BulletinId:escapejson}\",\n  \"action\": \"{BulletinTagAction}\",\n  \"tags\": \"{BulletinTagNames:escapejson}\"\n}",
                           "httpMethod": "POST",
                           "title": "Update Bulletin Tags",
-                          "description": "# Update Bulletin Tags\nThis runs the **Cyware CTIX - Add or Remove Tags on Threat Bulletin** playbook and changes the tags of Threat Bulletin **{BulletinId}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Bulletin Tags** to confirm.",
+                          "description": "# Update Bulletin Tags\nThis runs the **Cyware CTIX - Add or Remove Tags on Threat Bulletin** playbook and changes the tags of Threat Bulletin **`{BulletinId}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Bulletin Tags** to confirm.",
                           "runLabel": "Update Bulletin Tags"
                         }
                       }
@@ -2463,7 +2463,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookBulletinTags}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{BulletinId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project ['Bulletin ID'] = CtixId, Action, Status, Message",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookBulletinTags}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator == \"{BulletinId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Bulletin = Indicator, ['Bulletin ID'] = CtixId, Action, Status, Message",
                     "size": 0,
                     "title": "Bulletin Tags Result",
                     "queryType": 0,
@@ -2534,7 +2534,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "*Enter the bulletin ID and tags to show the **Update Bulletin Tags** button.*"
+                    "json": "*Enter the bulletin title or ID and the tags to show the **Update Bulletin Tags** button.*"
                   },
                   "name": "text - hint - bulletin id",
                   "conditionalVisibilities": [
@@ -2548,7 +2548,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "*Enter the bulletin ID and tags to show the **Update Bulletin Tags** button.*"
+                    "json": "*Enter the bulletin title or ID and the tags to show the **Update Bulletin Tags** button.*"
                   },
                   "name": "text - hint - bulletin tags",
                   "conditionalVisibilities": [
