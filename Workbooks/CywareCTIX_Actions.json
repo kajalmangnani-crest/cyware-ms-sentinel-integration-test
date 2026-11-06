@@ -160,7 +160,7 @@
           {
             "type": 1,
             "content": {
-              "json": "## How to use Indicator Actions\n- Run Cyware CTIX playbooks from Microsoft Sentinel: select an indicator in the grid, then use the actions below it. The sections further down work on new indicators, threat bulletins, indicators from other threat intelligence sources and alerts.\n- The **Time Range**, **IOC Type**, **Source** and **Risk Score** filters at the top apply to the grid.\n- Requires the Cyware CTIX playbooks to be deployed.",
+              "json": "## How to use Indicator Actions\n- Run Cyware CTIX playbooks from Microsoft Sentinel: select an indicator in the grid, then use the actions below it. Some sections also take a value typed in instead, and some work on new indicators, threat bulletins or alerts.\n- The **Time Range**, **IOC Type**, **Source** and **Risk Score** filters at the top apply to the grid.\n- Requires the Cyware CTIX playbooks to be deployed.",
               "style": "upsell"
             },
             "name": "text - indicator actions - about"
@@ -2997,7 +2997,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "## How to use the CTIX Watchlist\nAdd indicators to the CTIX watchlist, so CTIX records every occurrence of them in intel it receives after the indicator is added. The **Indicators to Watch** grid lists active indicators that Microsoft Sentinel received from other threat intelligence sources; set **Indicator Source** to **Cyware CTIX** or **All sources** to list CTIX indicators too.\n1. Select an indicator in the **Indicators to Watch** grid, or set **Indicator Selection** to **Enter manually** and enter the indicator value.\n2. Select **Add to CTIX Watchlist** to add it to the CTIX watchlist (once per indicator).\n3. Select **Get Occurrences** to look up where CTIX has observed it.\n4. The results show in the **Watchlist Occurrences** grid a few minutes after the run (up to 15 minutes the first time). Select the grid's refresh button until they appear.\n\nThe grid shows the latest lookup of the selected indicator from the last 24 hours. If no results appear, check the **CywareCTIX-GetWatchlistOccurrences** playbook's run history.",
+                    "json": "## How to use the CTIX Watchlist\nAdd indicators to the CTIX watchlist, so CTIX records every occurrence of them in intel it receives after the indicator is added.\n1. Select an indicator in the **Indicators** grid at the top, or set **Indicator Selection** to **Enter manually** and enter the value (for example an indicator from another threat intelligence source, or a keyword).\n2. Select **Add to CTIX Watchlist** to add it to the CTIX watchlist (once per indicator).\n3. Select **Get Occurrences** to look up where CTIX has observed it.\n4. The results show in the **Watchlist Occurrences** grid a few minutes after the run. Select the grid's refresh button until they appear.\n\nThe grid shows the latest lookup of the indicator from the last 24 hours. If no results appear, check the **CywareCTIX-GetWatchlistOccurrences** playbook's run history.",
                     "style": "upsell"
                   },
                   "name": "text - watchlist about"
@@ -3122,99 +3122,9 @@
                   ]
                 },
                 {
-                  "type": 9,
-                  "content": {
-                    "version": "KqlParameterItem/1.0",
-                    "parameters": [
-                      {
-                        "id": "08b8d04b-3aa0-4eb8-8bde-66d6d2958ea5",
-                        "version": "KqlParameterItem/1.0",
-                        "name": "WatchlistIndicatorSource",
-                        "label": "Indicator Source",
-                        "type": 2,
-                        "isRequired": true,
-                        "description": "Which indicators the grid lists: from other threat intelligence sources (not in CTIX), from Cyware CTIX, or both.",
-                        "jsonData": "[{\"value\": \"other\", \"label\": \"Other sources\", \"selected\": true}, {\"value\": \"ctix\", \"label\": \"Cyware CTIX\"}, {\"value\": \"all\", \"label\": \"All sources\"}]",
-                        "typeSettings": {
-                          "additionalResourceOptions": [],
-                          "showDefault": false
-                        }
-                      },
-                      {
-                        "id": "fe13d15d-8a3a-5d9e-8217-64bb8548bd88",
-                        "version": "KqlParameterItem/1.0",
-                        "name": "OtherIndicatorSearch",
-                        "label": "Search Indicator",
-                        "type": 1,
-                        "description": "Show only indicators whose value contains this text.",
-                        "timeContext": {
-                          "durationMs": 86400000
-                        }
-                      }
-                    ],
-                    "style": "pills",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces"
-                  },
-                  "name": "parameters - other indicator search"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "ThreatIntelIndicators\n| where isnotempty(ObservableValue)\n| where \"{WatchlistIndicatorSource}\" == \"all\" or (SourceSystem == \"CywareCTIX\") == (\"{WatchlistIndicatorSource}\" == \"ctix\")\n| where TimeGenerated {TimeRange}\n| summarize arg_max(TimeGenerated, SourceSystem, ObservableKey, ObservableValue, Confidence, ValidUntil, IsActive) by Id\n| where IsActive\n| where isempty(\"{OtherIndicatorSearch:escapejson}\") or ObservableValue contains \"{OtherIndicatorSearch:escapejson}\"\n| summarize ['IOC Type'] = take_any(tostring(split(ObservableKey, \":\")[0])), Sources = strcat_array(make_set(SourceSystem), \", \"),\n    Confidence = max(Confidence), ['Valid Until'] = max(ValidUntil), ['Last Updated'] = max(TimeGenerated) by Indicator = tostring(ObservableValue)\n| sort by ['Last Updated'] desc\n| take 10000",
-                    "size": 0,
-                    "title": "Indicators to Watch",
-                    "noDataMessage": "No active indicators from the selected source in the selected time range.",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "table",
-                    "timeContext": {
-                      "durationMs": 2592000000
-                    },
-                    "timeContextFromParameter": "TimeRange",
-                    "exportedParameters": [
-                      {
-                        "fieldName": "Indicator",
-                        "parameterName": "SelectedOtherIndicator",
-                        "parameterType": 1
-                      }
-                    ],
-                    "showAnalytics": true,
-                    "showRefreshButton": true,
-                    "showExportToExcel": true,
-                    "gridSettings": {
-                      "formatters": [
-                        {
-                          "columnMatch": "Confidence",
-                          "formatter": 8,
-                          "formatOptions": {
-                            "palette": "greenRed",
-                            "min": 0,
-                            "max": 100
-                          }
-                        },
-                        {
-                          "columnMatch": "Valid Until",
-                          "formatter": 6
-                        },
-                        {
-                          "columnMatch": "Last Updated",
-                          "formatter": 6
-                        }
-                      ],
-                      "filter": true,
-                      "rowLimit": 10000
-                    }
-                  },
-                  "customWidth": "100",
-                  "name": "query - watchlist - other indicators"
-                },
-                {
                   "type": 1,
                   "content": {
-                    "json": "Select an indicator in the grid to add it to the CTIX watchlist or get its occurrences.",
-                    "style": "info"
+                    "json": "Select an indicator in the grid above to use this action, or set **Indicator Selection** to **Enter manually**."
                   },
                   "name": "text - watchlist select",
                   "conditionalVisibilities": [
@@ -3224,9 +3134,8 @@
                       "value": "selected"
                     },
                     {
-                      "parameterName": "SelectedOtherIndicator",
-                      "comparison": "isEqualTo",
-                      "value": ""
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isEqualTo"
                     }
                   ]
                 },
@@ -3239,7 +3148,7 @@
                       {
                         "type": 1,
                         "content": {
-                          "json": "### Watchlist actions for **`{SelectedOtherIndicator}`**"
+                          "json": "### Watchlist actions for **`{SelectedIndicator}`**"
                         },
                         "name": "text - watchlist selected"
                       },
@@ -3259,10 +3168,10 @@
                                 "path": "{PlaybookAddWatchlist}/triggers/manual/run?api-version=2016-10-01",
                                 "headers": [],
                                 "params": [],
-                                "body": "{\n  \"value\": \"{SelectedOtherIndicator:escapejson}\"\n}",
+                                "body": "{\n  \"value\": \"{SelectedIndicator:escapejson}\"\n}",
                                 "httpMethod": "POST",
                                 "title": "Add to CTIX Watchlist",
-                                "description": "# Add to CTIX Watchlist\nThis runs the **Cyware CTIX - Add Indicator to Watchlist** playbook and changes the watchlist by adding **`{SelectedOtherIndicator}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Add to CTIX Watchlist** to confirm.",
+                                "description": "# Add to CTIX Watchlist\nThis runs the **Cyware CTIX - Add Indicator to Watchlist** playbook and changes the watchlist by adding **`{SelectedIndicator}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Add to CTIX Watchlist** to confirm.",
                                 "runLabel": "Add to CTIX Watchlist"
                               }
                             }
@@ -3270,7 +3179,7 @@
                         },
                         "conditionalVisibilities": [
                           {
-                            "parameterName": "SelectedOtherIndicator",
+                            "parameterName": "SelectedCtixId",
                             "comparison": "isNotEqualTo"
                           },
                           {
@@ -3296,10 +3205,10 @@
                                 "path": "{PlaybookWatchlistOccurrences}/triggers/manual/run?api-version=2016-10-01",
                                 "headers": [],
                                 "params": [],
-                                "body": "{\n  \"value\": \"{SelectedOtherIndicator:escapejson}\"\n}",
+                                "body": "{\n  \"value\": \"{SelectedIndicator:escapejson}\"\n}",
                                 "httpMethod": "POST",
                                 "title": "Get Occurrences",
-                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **`{SelectedOtherIndicator}`** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
+                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **`{SelectedIndicator}`** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
                                 "runLabel": "Get Occurrences"
                               }
                             }
@@ -3307,7 +3216,7 @@
                         },
                         "conditionalVisibilities": [
                           {
-                            "parameterName": "SelectedOtherIndicator",
+                            "parameterName": "SelectedCtixId",
                             "comparison": "isNotEqualTo"
                           },
                           {
@@ -3321,7 +3230,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddWatchlist}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{SelectedOtherIndicator:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator, Action, Status, Message",
+                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddWatchlist}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{SelectedIndicator:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator, Action, Status, Message",
                           "size": 0,
                           "title": "Add to CTIX Watchlist Result",
                           "queryType": 0,
@@ -3381,7 +3290,7 @@
                       "value": "selected"
                     },
                     {
-                      "parameterName": "SelectedOtherIndicator",
+                      "parameterName": "SelectedCtixId",
                       "comparison": "isNotEqualTo"
                     }
                   ]
@@ -3546,9 +3455,9 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{SelectedOtherIndicator:escapejson}\";\n// Latest run per keyword only.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
+                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{SelectedIndicator:escapejson}\";\n// Latest run per keyword only.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
                     "size": 0,
-                    "title": "Watchlist Occurrences for {SelectedOtherIndicator}",
+                    "title": "Watchlist Occurrences for {SelectedIndicator}",
                     "noDataMessage": "No occurrence results in the last 24 hours. Select Get Occurrences, wait a few minutes, then refresh this grid.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -3571,7 +3480,8 @@
                       ],
                       "filter": true,
                       "rowLimit": 10000
-                    }
+                    },
+                    "showAnalytics": true
                   },
                   "customWidth": "100",
                   "name": "query - watchlist - occurrences",
@@ -3582,10 +3492,28 @@
                       "value": "selected"
                     },
                     {
-                      "parameterName": "SelectedOtherIndicator",
+                      "parameterName": "SelectedCtixId",
                       "comparison": "isNotEqualTo"
                     }
                   ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "The grid shows up to 10,000 occurrences, newest first; **Total Occurrences** always has the full count. To see all occurrences, select **Open the last run query in the Logs view** (the icon at the top right of the grid)."
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "WatchlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "text - watchlist - occurrences note"
                 },
                 {
                   "type": 3,
@@ -3616,7 +3544,8 @@
                       ],
                       "filter": true,
                       "rowLimit": 10000
-                    }
+                    },
+                    "showAnalytics": true
                   },
                   "customWidth": "100",
                   "name": "query - watchlist - occurrences - manual",
@@ -3631,6 +3560,24 @@
                       "comparison": "isNotEqualTo"
                     }
                   ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "The grid shows up to 10,000 occurrences, newest first; **Total Occurrences** always has the full count. To see all occurrences, select **Open the last run query in the Logs view** (the icon at the top right of the grid)."
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "WatchlistSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    },
+                    {
+                      "parameterName": "WatchlistValue",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "text - watchlist - occurrences note - manual"
                 }
               ],
               "title": "CTIX Watchlist",
