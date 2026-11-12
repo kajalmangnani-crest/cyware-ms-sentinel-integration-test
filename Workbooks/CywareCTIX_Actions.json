@@ -2997,8 +2997,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "## How to use Add Indicator to CTIX Watchlist\n- Add an indicator to the CTIX watchlist, so CTIX records every occurrence of it in intel it receives after it is added.\n- Select an indicator in the **Indicators** grid at the top, or set **Indicator Selection** to **Enter manually** and enter the value (for example an indicator from another threat intelligence source, or a keyword).\n- Select **Add to CTIX Watchlist** (once per indicator). To see where CTIX has observed it, use **Get Watchlist Occurrences**.",
-                    "style": "upsell"
+                    "json": "Add an indicator to the CTIX watchlist, so CTIX records every occurrence of it in the intel it receives from then on. Use the indicator selected in the table above, or enter one manually."
                   },
                   "name": "text - watchlist about"
                 },
@@ -3360,8 +3359,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "## How to use Get Watchlist Occurrences\n- Look up where CTIX has observed an indicator on the CTIX watchlist. Add it with **Add Indicator to CTIX Watchlist** first.\n- Select an indicator in the **Indicators** grid at the top, or set **Indicator Selection** to **Enter manually** and enter the value.\n- Select **Get Occurrences**. The results show in the **Watchlist Occurrences** grid a few minutes after the run; select the grid's refresh button until they appear.\n- The grid shows the latest lookup of the indicator since the workbook was opened. If no results appear, check the **CywareCTIX-GetWatchlistOccurrences** playbook's run history.",
-                    "style": "upsell"
+                    "json": "Look up where CTIX has observed an indicator on the CTIX watchlist. Use the indicator selected in the table above, or enter one manually; the results show in the grid below a few minutes after the run."
                   },
                   "name": "text - watchlist occurrences about"
                 },
