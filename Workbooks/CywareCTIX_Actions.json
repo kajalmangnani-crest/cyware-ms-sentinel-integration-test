@@ -2997,7 +2997,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "## How to use the CTIX Watchlist\nAdd indicators to the CTIX watchlist, so CTIX records every occurrence of them in intel it receives after the indicator is added.\n1. Select an indicator in the **Indicators** grid at the top, or set **Indicator Selection** to **Enter manually** and enter the value (for example an indicator from another threat intelligence source, or a keyword).\n2. Select **Add to CTIX Watchlist** to add it to the CTIX watchlist (once per indicator).\n3. Select **Get Occurrences** to look up where CTIX has observed it.\n4. The results show in the **Watchlist Occurrences** grid a few minutes after the run. Select the grid's refresh button until they appear.\n\nThe grid shows the latest lookup of the indicator from the last 24 hours. If no results appear, check the **CywareCTIX-GetWatchlistOccurrences** playbook's run history.",
+                    "json": "## How to use Add Indicator to CTIX Watchlist\n- Add an indicator to the CTIX watchlist, so CTIX records every occurrence of it in intel it receives after it is added.\n- Select an indicator in the **Indicators** grid at the top, or set **Indicator Selection** to **Enter manually** and enter the value (for example an indicator from another threat intelligence source, or a keyword).\n- Select **Add to CTIX Watchlist** (once per indicator). To see where CTIX has observed it, use **Get Watchlist Occurrences**.",
                     "style": "upsell"
                   },
                   "name": "text - watchlist about"
@@ -3016,25 +3016,6 @@
                         "isRequired": true,
                         "description": "The CywareCTIX-AddIndicatorToWatchlist playbook (Logic App) to run.",
                         "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-AddIndicatorToWatchlist\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
-                        "typeSettings": {
-                          "additionalResourceOptions": [],
-                          "showDefault": false
-                        },
-                        "queryType": 1,
-                        "resourceType": "microsoft.resourcegraph/resources",
-                        "crossComponentResources": [
-                          "value::all"
-                        ]
-                      },
-                      {
-                        "id": "569214d9-0d40-5f63-9c5b-af9bd8f60289",
-                        "version": "KqlParameterItem/1.0",
-                        "name": "PlaybookWatchlistOccurrences",
-                        "label": "Watchlist Occurrences Playbook",
-                        "type": 5,
-                        "isRequired": true,
-                        "description": "The CywareCTIX-GetWatchlistOccurrences playbook (Logic App) to run.",
-                        "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-GetWatchlistOccurrences\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
                         "typeSettings": {
                           "additionalResourceOptions": [],
                           "showDefault": false
@@ -3077,7 +3058,7 @@
                         "label": "Indicator Value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "Indicator value to add to the CTIX watchlist or look up, for example 192.0.2.1 or example.com."
+                        "description": "Indicator value to add to the CTIX watchlist, for example 192.0.2.1 or example.com."
                       }
                     ],
                     "style": "pills",
@@ -3110,20 +3091,6 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "*The **CywareCTIX-GetWatchlistOccurrences** playbook is not deployed (Watchlist Occurrences Playbook dropdown is empty). Deploy it to use this action.*"
-                  },
-                  "name": "text - hint - PlaybookWatchlistOccurrences missing",
-                  "conditionalVisibilities": [
-                    {
-                      "parameterName": "PlaybookWatchlistOccurrences",
-                      "comparison": "isEqualTo",
-                      "value": ""
-                    }
-                  ]
-                },
-                {
-                  "type": 1,
-                  "content": {
                     "json": "Select an indicator in the grid above to use this action, or set **Indicator Selection** to **Enter manually**."
                   },
                   "name": "text - watchlist select",
@@ -3148,7 +3115,7 @@
                       {
                         "type": 1,
                         "content": {
-                          "json": "### Watchlist actions for **`{SelectedIndicator}`**"
+                          "json": "Indicator: **`{SelectedIndicator}`**"
                         },
                         "name": "text - watchlist selected"
                       },
@@ -3188,43 +3155,6 @@
                           }
                         ],
                         "name": "links - add to watchlist"
-                      },
-                      {
-                        "type": 11,
-                        "content": {
-                          "version": "LinkItem/1.0",
-                          "style": "list",
-                          "links": [
-                            {
-                              "id": "52325fda-218a-5822-ac09-55f1e4aa431c",
-                              "linkTarget": "ArmAction",
-                              "linkLabel": "Get Occurrences",
-                              "style": "primary",
-                              "linkIsContextBlade": true,
-                              "armActionContext": {
-                                "path": "{PlaybookWatchlistOccurrences}/triggers/manual/run?api-version=2016-10-01",
-                                "headers": [],
-                                "params": [],
-                                "body": "{\n  \"value\": \"{SelectedIndicator:escapejson}\"\n}",
-                                "httpMethod": "POST",
-                                "title": "Get Occurrences",
-                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **`{SelectedIndicator}`** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
-                                "runLabel": "Get Occurrences"
-                              }
-                            }
-                          ]
-                        },
-                        "conditionalVisibilities": [
-                          {
-                            "parameterName": "SelectedCtixId",
-                            "comparison": "isNotEqualTo"
-                          },
-                          {
-                            "parameterName": "PlaybookWatchlistOccurrences",
-                            "comparison": "isNotEqualTo"
-                          }
-                        ],
-                        "name": "links - get occurrences"
                       },
                       {
                         "type": 3,
@@ -3304,7 +3234,7 @@
                       {
                         "type": 1,
                         "content": {
-                          "json": "### Watchlist actions for **`{WatchlistValue}`**"
+                          "json": "Indicator: **`{WatchlistValue}`**"
                         },
                         "name": "text - watchlist selected - manual"
                       },
@@ -3344,43 +3274,6 @@
                           }
                         ],
                         "name": "links - add to watchlist - manual"
-                      },
-                      {
-                        "type": 11,
-                        "content": {
-                          "version": "LinkItem/1.0",
-                          "style": "list",
-                          "links": [
-                            {
-                              "id": "275d3920-3854-4c61-9b5f-2eca81343812",
-                              "linkTarget": "ArmAction",
-                              "linkLabel": "Get Occurrences",
-                              "style": "primary",
-                              "linkIsContextBlade": true,
-                              "armActionContext": {
-                                "path": "{PlaybookWatchlistOccurrences}/triggers/manual/run?api-version=2016-10-01",
-                                "headers": [],
-                                "params": [],
-                                "body": "{\n  \"value\": \"{WatchlistValue:escapejson}\"\n}",
-                                "httpMethod": "POST",
-                                "title": "Get Occurrences",
-                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **`{WatchlistValue}`** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
-                                "runLabel": "Get Occurrences"
-                              }
-                            }
-                          ]
-                        },
-                        "conditionalVisibilities": [
-                          {
-                            "parameterName": "WatchlistValue",
-                            "comparison": "isNotEqualTo"
-                          },
-                          {
-                            "parameterName": "PlaybookWatchlistOccurrences",
-                            "comparison": "isNotEqualTo"
-                          }
-                        ],
-                        "name": "links - get occurrences - manual"
                       },
                       {
                         "type": 3,
@@ -3450,15 +3343,270 @@
                       "comparison": "isNotEqualTo"
                     }
                   ]
+                }
+              ],
+              "title": "Add Indicator to CTIX Watchlist",
+              "expandable": true,
+              "expanded": false
+            },
+            "name": "group - watchlist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "## How to use Get Watchlist Occurrences\n- Look up where CTIX has observed an indicator on the CTIX watchlist. Add it with **Add Indicator to CTIX Watchlist** first.\n- Select an indicator in the **Indicators** grid at the top, or set **Indicator Selection** to **Enter manually** and enter the value.\n- Select **Get Occurrences**. The results show in the **Watchlist Occurrences** grid a few minutes after the run; select the grid's refresh button until they appear.\n- The grid shows the latest lookup of the indicator since the workbook was opened. If no results appear, check the **CywareCTIX-GetWatchlistOccurrences** playbook's run history.",
+                    "style": "upsell"
+                  },
+                  "name": "text - watchlist occurrences about"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "569214d9-0d40-5f63-9c5b-af9bd8f60289",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "PlaybookWatchlistOccurrences",
+                        "label": "Watchlist Occurrences Playbook",
+                        "type": 5,
+                        "isRequired": true,
+                        "description": "The CywareCTIX-GetWatchlistOccurrences playbook (Logic App) to run.",
+                        "query": "resources\n| where type =~ \"microsoft.logic/workflows\"\n| where name has \"CywareCTIX\"\n| extend selected = name =~ \"CywareCTIX-GetWatchlistOccurrences\"\n| order by selected desc, name asc\n| project value = id, label = name, selected",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": [
+                          "value::all"
+                        ]
+                      },
+                      {
+                        "id": "d8c2f194-7401-4b75-99d1-eb702808d624",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "OccurrencesSource",
+                        "label": "Indicator Selection",
+                        "type": 2,
+                        "isRequired": true,
+                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter manually\"}]",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - watchlist occurrences - playbooks"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "1100d718-717b-42d4-8e32-52e0e78f1d24",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "OccurrencesValue",
+                        "label": "Indicator Value",
+                        "type": 1,
+                        "isRequired": true,
+                        "description": "Indicator value to look up on the CTIX watchlist, for example 192.0.2.1 or example.com."
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "OccurrencesSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    }
+                  ],
+                  "name": "parameters - watchlist occurrences - value"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "*The **CywareCTIX-GetWatchlistOccurrences** playbook is not deployed (Watchlist Occurrences Playbook dropdown is empty). Deploy it to use this action.*"
+                  },
+                  "name": "text - hint - PlaybookWatchlistOccurrences missing",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "PlaybookWatchlistOccurrences",
+                      "comparison": "isEqualTo",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "Select an indicator in the grid above to use this action, or set **Indicator Selection** to **Enter manually**."
+                  },
+                  "name": "text - watchlist occurrences select",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "OccurrencesSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isEqualTo"
+                    }
+                  ]
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "Indicator: **`{SelectedIndicator}`**"
+                        },
+                        "name": "text - watchlist occurrences selected"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "52325fda-218a-5822-ac09-55f1e4aa431c",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Get Occurrences",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookWatchlistOccurrences}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"value\": \"{SelectedIndicator:escapejson}\"\n}",
+                                "httpMethod": "POST",
+                                "title": "Get Occurrences",
+                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **`{SelectedIndicator}`** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
+                                "runLabel": "Get Occurrences"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "SelectedCtixId",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookWatchlistOccurrences",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - get occurrences"
+                      }
+                    ]
+                  },
+                  "name": "group - watchlist occurrences actions",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "OccurrencesSource",
+                      "comparison": "isEqualTo",
+                      "value": "selected"
+                    },
+                    {
+                      "parameterName": "SelectedCtixId",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "Indicator: **`{OccurrencesValue}`**"
+                        },
+                        "name": "text - watchlist occurrences selected - manual"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "list",
+                          "links": [
+                            {
+                              "id": "275d3920-3854-4c61-9b5f-2eca81343812",
+                              "linkTarget": "ArmAction",
+                              "linkLabel": "Get Occurrences",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "armActionContext": {
+                                "path": "{PlaybookWatchlistOccurrences}/triggers/manual/run?api-version=2016-10-01",
+                                "headers": [],
+                                "params": [],
+                                "body": "{\n  \"value\": \"{OccurrencesValue:escapejson}\"\n}",
+                                "httpMethod": "POST",
+                                "title": "Get Occurrences",
+                                "description": "# Get Occurrences\nThis runs the **Cyware CTIX - Get Watchlist Occurrences** playbook. It reads the CTIX watchlist (no changes in Cyware Intel Exchange) and writes the occurrences of **`{OccurrencesValue}`** to the Watchlist Occurrences grid below.\n\nReview the request below, then select **Get Occurrences** to confirm.",
+                                "runLabel": "Get Occurrences"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "OccurrencesValue",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlaybookWatchlistOccurrences",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - get occurrences - manual"
+                      }
+                    ]
+                  },
+                  "name": "group - watchlist occurrences actions - manual",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "OccurrencesSource",
+                      "comparison": "isEqualTo",
+                      "value": "manual"
+                    },
+                    {
+                      "parameterName": "OccurrencesValue",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ]
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{SelectedIndicator:escapejson}\";\n// Latest run per keyword only.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
+                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{SelectedIndicator:escapejson}\" and TimeGenerated > todatetime(\"{PageOpenedAt}\");\n// Latest run per keyword since the workbook was opened.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
                     "size": 0,
                     "title": "Watchlist Occurrences for {SelectedIndicator}",
-                    "noDataMessage": "No occurrence results in the last 24 hours. Select Get Occurrences, wait a few minutes, then refresh this grid.",
+                    "noDataMessage": "No occurrence results since the workbook was opened. Select Get Occurrences, wait a few minutes, then refresh this grid.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
@@ -3487,7 +3635,7 @@
                   "name": "query - watchlist - occurrences",
                   "conditionalVisibilities": [
                     {
-                      "parameterName": "WatchlistSource",
+                      "parameterName": "OccurrencesSource",
                       "comparison": "isEqualTo",
                       "value": "selected"
                     },
@@ -3504,7 +3652,7 @@
                   },
                   "conditionalVisibilities": [
                     {
-                      "parameterName": "WatchlistSource",
+                      "parameterName": "OccurrencesSource",
                       "comparison": "isEqualTo",
                       "value": "selected"
                     },
@@ -3519,10 +3667,10 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{WatchlistValue:escapejson}\";\n// Latest run per keyword only.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
+                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{OccurrencesValue:escapejson}\" and TimeGenerated > todatetime(\"{PageOpenedAt}\");\n// Latest run per keyword since the workbook was opened.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
                     "size": 0,
-                    "title": "Watchlist Occurrences for {WatchlistValue}",
-                    "noDataMessage": "No occurrence results in the last 24 hours. Select Get Occurrences, wait a few minutes, then refresh this grid.",
+                    "title": "Watchlist Occurrences for {OccurrencesValue}",
+                    "noDataMessage": "No occurrence results since the workbook was opened. Select Get Occurrences, wait a few minutes, then refresh this grid.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
@@ -3551,12 +3699,12 @@
                   "name": "query - watchlist - occurrences - manual",
                   "conditionalVisibilities": [
                     {
-                      "parameterName": "WatchlistSource",
+                      "parameterName": "OccurrencesSource",
                       "comparison": "isEqualTo",
                       "value": "manual"
                     },
                     {
-                      "parameterName": "WatchlistValue",
+                      "parameterName": "OccurrencesValue",
                       "comparison": "isNotEqualTo"
                     }
                   ]
@@ -3568,23 +3716,23 @@
                   },
                   "conditionalVisibilities": [
                     {
-                      "parameterName": "WatchlistSource",
+                      "parameterName": "OccurrencesSource",
                       "comparison": "isEqualTo",
                       "value": "manual"
                     },
                     {
-                      "parameterName": "WatchlistValue",
+                      "parameterName": "OccurrencesValue",
                       "comparison": "isNotEqualTo"
                     }
                   ],
                   "name": "text - watchlist - occurrences note - manual"
                 }
               ],
-              "title": "CTIX Watchlist",
+              "title": "Get Watchlist Occurrences",
               "expandable": true,
               "expanded": false
             },
-            "name": "group - watchlist"
+            "name": "group - watchlist occurrences"
           },
           {
             "type": 12,
@@ -3968,7 +4116,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "**Instructions**\n- Enter one CVE ID, for example `CVE-2021-44228`, and select **Enrich Vulnerability**.\n- Wait about a minute, then select refresh on the grids below. The grids show the latest run for the CVE ID in the last 24 hours."
+                    "json": "**Instructions**\n- Enter one CVE ID, for example `CVE-2021-44228`, and select **Enrich Vulnerability**.\n- Wait about a minute, then select refresh on the grids below. The grids show the latest run for the CVE ID since the workbook was opened."
                   },
                   "name": "text - enrich vulnerability - instructions",
                   "conditionalVisibilities": [
@@ -4056,10 +4204,10 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"CVSS\"\n| project Source, ['Source Type'] = Item, ['CVSS v2'] = Cvss2, ['CVSS v3'] = Cvss3\n| sort by ['CVSS v3'] desc, ['CVSS v2'] desc",
+                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID since the workbook was opened.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" and TimeGenerated > todatetime(\"{PageOpenedAt}\") | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"CVSS\"\n| project Source, ['Source Type'] = Item, ['CVSS v2'] = Cvss2, ['CVSS v3'] = Cvss3\n| sort by ['CVSS v3'] desc, ['CVSS v2'] desc",
                     "size": 4,
                     "title": "CVSS Scores by Source for {CveId}",
-                    "noDataMessage": "No data for this CVE ID in the latest run.",
+                    "noDataMessage": "No data for this CVE ID in the latest run since the workbook was opened.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
@@ -4155,10 +4303,10 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" | top 1 by TimeGenerated desc | project RunId);\nlet Order = dynamic([\"TLP\",\"Confidence score\",\"Analyst score\",\"Analyst CVSS score\",\"CVSS v2 score (CTIX)\",\"CVSS v3 score (CTIX)\",\"CVSS v4 score (CTIX)\",\"EPSS score\",\"Weakness (CWE)\",\"CISA KEV published\",\"CISA remediation due\",\"Mandiant vulnerability ID\",\"Published\",\"Added to CTIX\",\"Last modified in CTIX\",\"First seen\",\"Last seen\",\"Deprecated\",\"False positive\",\"Allowlisted\",\"Sources\",\"Tags\",\"Related objects in CTIX\",\"Description\"]);\nRows\n| where RunId == LatestRun and Section == \"Summary\"\n| extend Rank = array_index_of(Order, Item)\n| sort by Rank asc\n| project Field = Item, Value = Detail",
+                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID since the workbook was opened.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" and TimeGenerated > todatetime(\"{PageOpenedAt}\") | top 1 by TimeGenerated desc | project RunId);\nlet Order = dynamic([\"TLP\",\"Confidence score\",\"Analyst score\",\"Analyst CVSS score\",\"CVSS v2 score (CTIX)\",\"CVSS v3 score (CTIX)\",\"CVSS v4 score (CTIX)\",\"EPSS score\",\"Weakness (CWE)\",\"CISA KEV published\",\"CISA remediation due\",\"Mandiant vulnerability ID\",\"Published\",\"Added to CTIX\",\"Last modified in CTIX\",\"First seen\",\"Last seen\",\"Deprecated\",\"False positive\",\"Allowlisted\",\"Sources\",\"Tags\",\"Related objects in CTIX\",\"Description\"]);\nRows\n| where RunId == LatestRun and Section == \"Summary\"\n| extend Rank = array_index_of(Order, Item)\n| sort by Rank asc\n| project Field = Item, Value = Detail",
                     "size": 0,
                     "title": "Vulnerability Summary for {CveId}",
-                    "noDataMessage": "No data for this CVE ID in the latest run.",
+                    "noDataMessage": "No data for this CVE ID in the latest run since the workbook was opened.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
@@ -4189,10 +4337,10 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"AffectedProduct\"\n| project Product = Item, ['Found In'] = Source, Detail = iff(Detail == \"Affected CPE\", \"\", Detail)\n| sort by Product asc",
+                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID since the workbook was opened.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" and TimeGenerated > todatetime(\"{PageOpenedAt}\") | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"AffectedProduct\"\n| project Product = Item, ['Found In'] = Source, Detail = iff(Detail == \"Affected CPE\", \"\", Detail)\n| sort by Product asc",
                     "size": 0,
                     "title": "Affected Products for {CveId}",
-                    "noDataMessage": "No data for this CVE ID in the latest run.",
+                    "noDataMessage": "No data for this CVE ID in the latest run since the workbook was opened.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
@@ -4223,10 +4371,10 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"RelatedObject\"\n| project ['Object Type'] = ObjectType, Name = Item, Relationship = RelationType, TLP = Tlp, Source\n| sort by ['Object Type'] asc, Name asc",
+                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID since the workbook was opened.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" and TimeGenerated > todatetime(\"{PageOpenedAt}\") | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"RelatedObject\"\n| project ['Object Type'] = ObjectType, Name = Item, Relationship = RelationType, TLP = Tlp, Source\n| sort by ['Object Type'] asc, Name asc",
                     "size": 0,
                     "title": "Related Threats for {CveId}",
-                    "noDataMessage": "No data for this CVE ID in the latest run.",
+                    "noDataMessage": "No data for this CVE ID in the latest run since the workbook was opened.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
@@ -4257,10 +4405,10 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"SourceDescription\"\n| extend Text = replace_string(replace_string(replace_string(Detail, \"<br/>\", \" \"), \"<br>\", \" \"), \"&nbsp;\", \" \")\n| extend Description = trim(\" \", replace_regex(replace_regex(Text, @\"<[^>]+>\", \" \"), @\"\\s+\", \" \"))\n| project Source, Collection = Item, TLP = Tlp, Description\n| sort by Source asc",
+                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Cve: string, Found: bool, CtixId: string, Section: string, Item: string, Detail: string, Source: string, Tlp: string, ObjectType: string, RelationType: string, Cvss2: real, Cvss3: real)[]),\n    (CywareCTIXVulnerabilityEnrichment_CL)\n| where Cve =~ \"{CveId:escapejson}\";\n// Rows of the latest run for this CVE ID since the workbook was opened.\nlet LatestRun = toscalar(Rows | where Section == \"Status\" and TimeGenerated > todatetime(\"{PageOpenedAt}\") | top 1 by TimeGenerated desc | project RunId);\nRows\n| where RunId == LatestRun and Section == \"SourceDescription\"\n| extend Text = replace_string(replace_string(replace_string(Detail, \"<br/>\", \" \"), \"<br>\", \" \"), \"&nbsp;\", \" \")\n| extend Description = trim(\" \", replace_regex(replace_regex(Text, @\"<[^>]+>\", \" \"), @\"\\s+\", \" \"))\n| project Source, Collection = Item, TLP = Tlp, Description\n| sort by Source asc",
                     "size": 4,
                     "title": "Source Descriptions for {CveId}",
-                    "noDataMessage": "No data for this CVE ID in the latest run.",
+                    "noDataMessage": "No data for this CVE ID in the latest run since the workbook was opened.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
@@ -4305,7 +4453,8 @@
                   "type": 1,
                   "name": "text - search indicators - about",
                   "content": {
-                    "json": "Search the indicators of Cyware Intel Exchange by indicator type, confidence score, TLP, tag or created/modified date range. Example: all AMBER IP addresses with a score of 70 or more created in the last 7 days. The playbook runs the search with the CTIX query language and writes the matching indicators to the grid below; the same data is in the **CywareCTIXIndicatorSearch_CL** table, so it can be used for hunting or to build a watchlist in Microsoft Sentinel."
+                    "json": "## How to use Search Indicators\n- Search the indicators of Cyware Intel Exchange by indicator type, confidence score, TLP, tag or created/modified date range.\n- Example: all AMBER IP addresses with a score of 70 or more created in the last 7 days.\n- The playbook runs the search with the CTIX query language and writes the matching indicators to the grid below.",
+                    "style": "upsell"
                   }
                 },
                 {
@@ -4584,7 +4733,7 @@
                     }
                   ],
                   "content": {
-                    "json": "**Instructions**\n- Choose the filters; every filter you leave at its default is not applied.\n- Select **Search Indicators**, wait about a minute, then select refresh on the grids below. The grids show the latest search of the last 24 hours."
+                    "json": "**Instructions**\n- Choose the filters; every filter you leave at its default is not applied.\n- Select **Search Indicators**, wait about a minute, then select refresh on the grids below. The grids show the latest search since the workbook was opened."
                   }
                 },
                 {
@@ -4651,10 +4800,10 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, SearchId: string, RowType: string, Message: string, Query: string, TotalMatches: long, ReturnedCount: int, CtixId: string, Indicator: string, IocType: string, Confidence: int, Tlp: string, Severity: string, Tags: dynamic, Sources: dynamic, CtixCreated: datetime, CtixModified: datetime, ValidUntil: datetime, IsDeprecated: bool, IsFalsePositive: bool, IsAllowlisted: bool, IsReviewed: bool)[]),\n    (CywareCTIXIndicatorSearch_CL);\n// Rows of the latest search.\nlet LatestRun = toscalar(Rows | where RowType == \"Status\" | top 1 by TimeGenerated desc | project SearchId);\nlet S = \"{SearchSort}\";\nRows\n| where RowType == \"Result\" and SearchId == LatestRun\n| extend SortKey = case(S == \"-ctix_modified\", tolong(CtixModified), S == \"ctix_modified\", -tolong(CtixModified), S == \"-ctix_created\", tolong(CtixCreated), S == \"ctix_created\", -tolong(CtixCreated), S == \"-confidence_score\", tolong(coalesce(Confidence, -1)), -tolong(coalesce(Confidence, 1000)))\n| extend T = iff(isnull(Tags) or array_length(Tags) == 0, dynamic([{}]), Tags), SRC = iff(isnull(Sources) or array_length(Sources) == 0, dynamic([{}]), Sources)\n| mv-apply t = T on (summarize TagNames = strcat_array(make_list(tostring(t.name)), \", \"))\n| mv-apply s = SRC on (summarize SourceNames = strcat_array(make_list(tostring(s.name)), \", \"))\n| sort by SortKey desc\n| project Indicator, Type = IocType, Confidence, TLP = Tlp, Severity, Tags = TagNames, Sources = SourceNames, ['Created in CTIX'] = CtixCreated, ['Modified in CTIX'] = CtixModified, ['Valid Until'] = ValidUntil, Allowlisted = IsAllowlisted, Deprecated = IsDeprecated, ['False Positive'] = IsFalsePositive, Reviewed = IsReviewed, ['CTIX ID'] = CtixId",
+                    "query": "let Rows = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, SearchId: string, RowType: string, Message: string, Query: string, TotalMatches: long, ReturnedCount: int, CtixId: string, Indicator: string, IocType: string, Confidence: int, Tlp: string, Severity: string, Tags: dynamic, Sources: dynamic, CtixCreated: datetime, CtixModified: datetime, ValidUntil: datetime, IsDeprecated: bool, IsFalsePositive: bool, IsAllowlisted: bool, IsReviewed: bool)[]),\n    (CywareCTIXIndicatorSearch_CL);\n// Rows of the latest search since the workbook was opened.\nlet LatestRun = toscalar(Rows | where RowType == \"Status\" and TimeGenerated > todatetime(\"{PageOpenedAt}\") | top 1 by TimeGenerated desc | project SearchId);\nlet S = \"{SearchSort}\";\nRows\n| where RowType == \"Result\" and SearchId == LatestRun\n| extend SortKey = case(S == \"-ctix_modified\", tolong(CtixModified), S == \"ctix_modified\", -tolong(CtixModified), S == \"-ctix_created\", tolong(CtixCreated), S == \"ctix_created\", -tolong(CtixCreated), S == \"-confidence_score\", tolong(coalesce(Confidence, -1)), -tolong(coalesce(Confidence, 1000)))\n| extend T = iff(isnull(Tags) or array_length(Tags) == 0, dynamic([{}]), Tags), SRC = iff(isnull(Sources) or array_length(Sources) == 0, dynamic([{}]), Sources)\n| mv-apply t = T on (summarize TagNames = strcat_array(make_list(tostring(t.name)), \", \"))\n| mv-apply s = SRC on (summarize SourceNames = strcat_array(make_list(tostring(s.name)), \", \"))\n| sort by SortKey desc\n| project Indicator, Type = IocType, Confidence, TLP = Tlp, Severity, Tags = TagNames, Sources = SourceNames, ['Created in CTIX'] = CtixCreated, ['Modified in CTIX'] = CtixModified, ['Valid Until'] = ValidUntil, Allowlisted = IsAllowlisted, Deprecated = IsDeprecated, ['False Positive'] = IsFalsePositive, Reviewed = IsReviewed, ['CTIX ID'] = CtixId",
                     "size": 0,
                     "title": "Indicators",
-                    "noDataMessage": "No indicators for the latest search.",
+                    "noDataMessage": "No indicators for the latest search since the workbook was opened.",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "visualization": "table",
