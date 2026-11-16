@@ -542,7 +542,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "Update an indicator in Cyware Intel Exchange so its status follows the investigation outcome in Microsoft Sentinel. Use the indicator selected in the table above, or enter its CTIX ID."
+                    "json": "Update an indicator in Cyware Intel Exchange so its status follows the investigation outcome in Microsoft Sentinel. Use the indicator selected in the table above, or enter its CTIX ID or value."
                   },
                   "name": "text - update indicator status - about"
                 },
@@ -578,7 +578,7 @@
                         "label": "Indicator Selection",
                         "type": 2,
                         "isRequired": true,
-                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter CTIX ID\"}]",
+                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter manually\"}]",
                         "typeSettings": {
                           "additionalResourceOptions": [],
                           "showDefault": false
@@ -639,10 +639,10 @@
                         "id": "91f93647-0e92-575a-9d5d-0cfc031f00fa",
                         "version": "KqlParameterItem/1.0",
                         "name": "IndicatorCtixId",
-                        "label": "CTIX ID",
+                        "label": "CTIX ID or indicator value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "CTIX object ID of the indicator."
+                        "description": "CTIX ID of the indicator (the CTIX ID column of the Indicators grid, or the ID on the indicator's page in CTIX), or the indicator value, for example 192.0.2.1 or example.com. A value updates every CTIX indicator with exactly that value."
                       }
                     ],
                     "style": "pills",
@@ -661,7 +661,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "Click a row in the indicators table above to select an indicator or set **Indicator Selection** to **Enter CTIX ID** and enter the ID manually."
+                    "json": "Click a row in the indicators table above to select an indicator or set **Indicator Selection** to **Enter manually** and enter the CTIX ID or the indicator value."
                   },
                   "conditionalVisibilities": [
                     {
@@ -854,7 +854,7 @@
                           "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{IndicatorCtixId:escapejson}\", \"objectType\": \"indicator\"}",
                           "httpMethod": "POST",
                           "title": "Update Indicator Status",
-                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **CTIX object {IndicatorCtixId}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **`{IndicatorCtixId}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
                           "runLabel": "Update Indicator"
                         }
                       }
@@ -906,7 +906,7 @@
                           "body": "{\"action\": \"{IndicatorStatusAction}\", \"ctixId\": \"{IndicatorCtixId:escapejson}\", \"objectType\": \"indicator\", \"undeprecateDays\": \"{IndicatorUndeprecateDays:escapejson}\"}",
                           "httpMethod": "POST",
                           "title": "Update Indicator Status",
-                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **CTIX object {IndicatorCtixId}** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
+                          "description": "# Update Indicator Status\nThis runs the **Cyware CTIX - Update Indicator Status** playbook and performs **{IndicatorStatusAction:label}** on **`{IndicatorCtixId}`** in Cyware Intel Exchange.\n\nReview the request below, then select **Update Indicator** to confirm.",
                           "runLabel": "Update Indicator"
                         }
                       }
@@ -1006,7 +1006,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-UpdateIndicatorStatus\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{IndicatorCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-UpdateIndicatorStatus\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{IndicatorCtixId:escapejson}\" or Indicator =~ \"{IndicatorCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
                     "size": 0,
                     "title": "Update Indicator Status Result",
                     "queryType": 0,
@@ -1282,10 +1282,10 @@
                         "id": "4ace7831-6622-551a-897b-c901a04410ae",
                         "version": "KqlParameterItem/1.0",
                         "name": "AllowlistValue",
-                        "label": "Indicator Value",
+                        "label": "CTIX ID or indicator value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "e.g. 192.0.2.10 for IPv4, example.com for a domain"
+                        "description": "CTIX ID of the indicator, or the indicator value, for example 192.0.2.10 or example.com. For a CTIX ID, the type is read from CTIX and Indicator Type is not used."
                       },
                       {
                         "id": "f3676071-115a-533c-90d0-162f9c35dc9d",
@@ -1298,7 +1298,8 @@
                         "typeSettings": {
                           "additionalResourceOptions": [],
                           "showDefault": false
-                        }
+                        },
+                        "description": "Not used for a CTIX ID: the type is read from CTIX."
                       }
                     ],
                     "style": "pills",
@@ -1336,7 +1337,7 @@
                           "body": "{\"indicatorType\": \"{AllowlistType}\", \"indicatorValue\": \"{AllowlistValue:escapejson}\", \"reason\": \"{AllowlistReason:escapejson}\"}",
                           "httpMethod": "POST",
                           "title": "Add Indicator to Allowlist",
-                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **`{AllowlistValue:escapejson}`** ({AllowlistType}) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
+                          "description": "# Add Indicator to Allowlist\nThis runs the **Cyware CTIX - Add Indicator to Allowlist** playbook and adds **`{AllowlistValue:escapejson}`** (type {AllowlistType}, or the indicator's type in CTIX for a CTIX ID) to the Cyware Intel Exchange allowlist with the reason: *{AllowlistReason}*.\n\nReview the request below, then select **Add to Allowlist** to confirm.",
                           "runLabel": "Add to Allowlist"
                         }
                       }
@@ -1426,7 +1427,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddIndicatorToAllowlist\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddIndicatorToAllowlist\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistValue:escapejson}\" or CtixId == \"{AllowlistValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
                     "size": 0,
                     "title": "Add to Allowlist Result",
                     "queryType": 0,
@@ -1528,7 +1529,7 @@
                         "label": "Indicator Selection",
                         "type": 2,
                         "isRequired": true,
-                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter CTIX ID\"}]",
+                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter manually\"}]",
                         "typeSettings": {
                           "additionalResourceOptions": [],
                           "showDefault": false
@@ -1577,10 +1578,10 @@
                         "id": "ac9a579a-b136-47e1-ba61-2a4724257489",
                         "version": "KqlParameterItem/1.0",
                         "name": "TagsCtixId",
-                        "label": "CTIX ID",
+                        "label": "CTIX ID or indicator value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "CTIX ID of the indicator: the CTIX ID column of the Indicators grid, or the ID on the indicator's page in CTIX."
+                        "description": "CTIX ID of the indicator (the CTIX ID column of the Indicators grid, or the ID on the indicator's page in CTIX), or the indicator value, for example 192.0.2.1 or example.com. A value updates every CTIX indicator with exactly that value."
                       }
                     ],
                     "style": "pills",
@@ -1792,7 +1793,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookManageTags}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{TagsCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookManageTags}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{TagsCtixId:escapejson}\" or Indicator =~ \"{TagsCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
                     "size": 0,
                     "title": "Tags Result",
                     "queryType": 0,
@@ -1956,7 +1957,7 @@
                         "label": "Indicator Selection",
                         "type": 2,
                         "isRequired": true,
-                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter CTIX ID\"}]",
+                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter manually\"}]",
                         "typeSettings": {
                           "additionalResourceOptions": [],
                           "showDefault": false
@@ -1994,10 +1995,10 @@
                         "id": "01770bc8-d95c-43dc-a543-97d19b35ee03",
                         "version": "KqlParameterItem/1.0",
                         "name": "NoteCtixId",
-                        "label": "CTIX ID",
+                        "label": "CTIX ID or indicator value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "CTIX ID of the indicator: the CTIX ID column of the Indicators grid, or the ID on the indicator's page in CTIX."
+                        "description": "CTIX ID of the indicator (the CTIX ID column of the Indicators grid, or the ID on the indicator's page in CTIX), or the indicator value, for example 192.0.2.1 or example.com. A value updates every CTIX indicator with exactly that value."
                       }
                     ],
                     "style": "pills",
@@ -2209,7 +2210,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddNote}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{NoteCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddNote}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{NoteCtixId:escapejson}\" or Indicator =~ \"{NoteCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
                     "size": 0,
                     "title": "Add Note Result",
                     "queryType": 0,
@@ -2607,7 +2608,7 @@
                         "label": "Indicator Selection",
                         "type": 2,
                         "isRequired": true,
-                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter CTIX ID\"}]",
+                        "jsonData": "[{\"value\": \"selected\", \"label\": \"Selected indicator\", \"selected\": true}, {\"value\": \"manual\", \"label\": \"Enter manually\"}]",
                         "typeSettings": {
                           "additionalResourceOptions": [],
                           "showDefault": false
@@ -2646,10 +2647,10 @@
                         "id": "b4a6ebc6-05af-4364-91da-502a0cdab11c",
                         "version": "KqlParameterItem/1.0",
                         "name": "ScoreCtixId",
-                        "label": "CTIX ID",
+                        "label": "CTIX ID or indicator value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "CTIX ID of the indicator: the CTIX ID column of the Indicators grid, or the ID on the indicator's page in CTIX."
+                        "description": "CTIX ID of the indicator (the CTIX ID column of the Indicators grid, or the ID on the indicator's page in CTIX), or the indicator value, for example 192.0.2.1 or example.com. A value updates every CTIX indicator with exactly that value."
                       }
                     ],
                     "style": "pills",
@@ -2921,7 +2922,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookScoreStatus}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{ScoreCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookScoreStatus}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{ScoreCtixId:escapejson}\" or Indicator =~ \"{ScoreCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
                     "size": 0,
                     "title": "Analyst Score Result",
                     "queryType": 0,
@@ -3054,10 +3055,10 @@
                         "id": "e814bd7a-aadf-4f14-85ef-354a0cc35d70",
                         "version": "KqlParameterItem/1.0",
                         "name": "WatchlistValue",
-                        "label": "Indicator Value",
+                        "label": "CTIX ID or indicator value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "Indicator value to add to the CTIX watchlist, for example 192.0.2.1 or example.com."
+                        "description": "CTIX ID of the indicator, or the indicator value to add to the CTIX watchlist, for example 192.0.2.1 or example.com. A CTIX ID is replaced by the indicator's value."
                       }
                     ],
                     "style": "pills",
@@ -3278,7 +3279,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddWatchlist}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{WatchlistValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator, Action, Status, Message",
+                          "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddWatchlist}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{WatchlistValue:escapejson}\" or CtixId == \"{WatchlistValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator, Action, Status, Message",
                           "size": 0,
                           "title": "Add to CTIX Watchlist Result",
                           "queryType": 0,
@@ -3416,10 +3417,10 @@
                         "id": "1100d718-717b-42d4-8e32-52e0e78f1d24",
                         "version": "KqlParameterItem/1.0",
                         "name": "OccurrencesValue",
-                        "label": "Indicator Value",
+                        "label": "CTIX ID or indicator value",
                         "type": 1,
                         "isRequired": true,
-                        "description": "Indicator value to look up on the CTIX watchlist, for example 192.0.2.1 or example.com."
+                        "description": "CTIX ID of the indicator, or the indicator value to look up on the CTIX watchlist, for example 192.0.2.1 or example.com. A CTIX ID is replaced by the indicator's value."
                       }
                     ],
                     "style": "pills",
@@ -3601,7 +3602,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{SelectedIndicator:escapejson}\" and TimeGenerated > todatetime(\"{PageOpenedAt}\");\n// Latest run per keyword since the workbook was opened.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
+                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, CtixId: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{SelectedIndicator:escapejson}\" and TimeGenerated > todatetime(\"{PageOpenedAt}\");\n// Latest run per keyword since the workbook was opened.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
                     "size": 0,
                     "title": "Watchlist Occurrences for {SelectedIndicator}",
                     "noDataMessage": "No occurrence results since the workbook was opened. Select Get Occurrences, wait a few minutes, then refresh this grid.",
@@ -3665,7 +3666,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where Value =~ \"{OccurrencesValue:escapejson}\" and TimeGenerated > todatetime(\"{PageOpenedAt}\");\n// Latest run per keyword since the workbook was opened.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
+                    "query": "let Results = union isfuzzy=true\n    (datatable(TimeGenerated: datetime, RunId: string, Value: string, CtixId: string, Found: bool, WatchlistId: string, IsActive: bool,\n        TotalOccurrences: int, ObjectId: string, ObjectType: string, ObjectName: string, MatchedField: string,\n        Source: string, Collection: string, OccurrenceTime: datetime)[]),\n    (CywareCTIXWatchlistOccurrences_CL)\n| where (Value =~ \"{OccurrencesValue:escapejson}\" or CtixId == \"{OccurrencesValue:escapejson}\") and TimeGenerated > todatetime(\"{PageOpenedAt}\");\n// Latest run per keyword since the workbook was opened.\nlet LatestRuns = Results | summarize arg_max(TimeGenerated, RunId) by Value | project Key = strcat(Value, \"|\", RunId);\nResults\n| where strcat(Value, \"|\", RunId) in (LatestRuns)\n| sort by Value asc, OccurrenceTime desc\n| project Keyword = Value, ['On Watchlist'] = Found, ['Total Occurrences'] = TotalOccurrences, ['Matched Object'] = ObjectName,\n    ['Object Type'] = ObjectType, ['Matched Field'] = MatchedField, Source, Collection, ['Occurrence Time'] = OccurrenceTime,\n    ['Looked Up'] = TimeGenerated",
                     "size": 0,
                     "title": "Watchlist Occurrences for {OccurrencesValue}",
                     "noDataMessage": "No occurrence results since the workbook was opened. Select Get Occurrences, wait a few minutes, then refresh this grid.",
