@@ -2950,6 +2950,6 @@
     }
   ],
   "fallbackResourceIds": [],
-  "fromTemplateId": "sentinel-CywareCTIX",
+  "fromTemplateId": "sentinel-CywareCTIXOverview",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
