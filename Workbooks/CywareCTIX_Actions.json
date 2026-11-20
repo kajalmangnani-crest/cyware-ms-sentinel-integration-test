@@ -472,7 +472,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddNewIndicator\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{IndicatorValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddIndicator}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{IndicatorValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
                     "size": 0,
                     "title": "Add New Indicator Result",
                     "queryType": 0,
@@ -942,7 +942,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-UpdateIndicatorStatus\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{SelectedCtixId}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookUpdateIndicatorStatus}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{SelectedCtixId}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
                     "size": 0,
                     "title": "Update Indicator Status Result",
                     "queryType": 0,
@@ -1006,7 +1006,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-UpdateIndicatorStatus\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{IndicatorCtixId:escapejson}\" or Indicator =~ \"{IndicatorCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookUpdateIndicatorStatus}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where CtixId == \"{IndicatorCtixId:escapejson}\" or Indicator =~ \"{IndicatorCtixId:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| join kind=leftouter (CywareCTIXIndicators | project CtixId, CtixIndicator = Indicator) on CtixId\n| project Indicator = coalesce(Indicator, CtixIndicator, CtixId), Action, Status,\n    Message = iff(isnotempty(CtixIndicator) and isnotempty(CtixId), replace_string(Message, CtixId, CtixIndicator), Message)",
                     "size": 0,
                     "title": "Update Indicator Status Result",
                     "queryType": 0,
@@ -1364,7 +1364,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddIndicatorToAllowlist\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistSelectedValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddToAllowlist}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistSelectedValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
                     "size": 0,
                     "title": "Add to Allowlist Result",
                     "queryType": 0,
@@ -1427,7 +1427,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == \"CywareCTIX-AddIndicatorToAllowlist\"\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistValue:escapejson}\" or CtixId == \"{AllowlistValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
+                    "query": "union isfuzzy=true\n    (datatable(TimeGenerated: datetime, Playbook: string, Action: string, CtixId: string, Indicator: string, Status: string, Message: string, Details: string)[]),\n    (CywareCTIXPlaybookResults_CL)\n| where Playbook == extract(@\"[^/]+$\", 0, \"{PlaybookAddToAllowlist}\")\n| where TimeGenerated > todatetime(\"{PageOpenedAt}\")\n| where Indicator =~ \"{AllowlistValue:escapejson}\" or CtixId == \"{AllowlistValue:escapejson}\"\n| sort by TimeGenerated desc\n| take 1\n| project Indicator = iff(isnotempty(Indicator), Indicator, CtixId), Action, Status, Message",
                     "size": 0,
                     "title": "Add to Allowlist Result",
                     "queryType": 0,
